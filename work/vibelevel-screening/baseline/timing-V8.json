@@ -1,0 +1,368 @@
+{
+ "fps": 30,
+ "duration": 118.3,
+ "voice": "af_heart",
+ "scenes": [
+  {
+   "id": "s1-problem",
+   "start": 0.0,
+   "end": 11.26,
+   "voStart": 0.35,
+   "voDuration": 9.505,
+   "beats": [
+    {
+     "label": "Resumes",
+     "t": 0.35,
+     "word": "Resumes"
+    },
+    {
+     "label": "what they've done",
+     "t": 1.19,
+     "word": "what"
+    },
+    {
+     "label": "Interviews",
+     "t": 2.97,
+     "word": "Interviews"
+    },
+    {
+     "label": "how they present",
+     "t": 3.75,
+     "word": "how"
+    },
+    {
+     "label": "But neither",
+     "t": 5.85,
+     "word": "but"
+    },
+    {
+     "label": "how they perform",
+     "t": 7.53,
+     "word": "how"
+    },
+    {
+     "label": "when the work gets real",
+     "t": 8.43,
+     "word": "when"
+    }
+   ]
+  },
+  {
+   "id": "s3-intro",
+   "start": 11.26,
+   "end": 24.71,
+   "voStart": 11.56,
+   "voDuration": 12.354,
+   "beats": [
+    {
+     "label": "VibeLevel Screening (logo)",
+     "t": 11.98,
+     "word": "vibe"
+    },
+    {
+     "label": "realistic, role-specific tasks",
+     "t": 14.24,
+     "word": "realistic,"
+    },
+    {
+     "label": "four dimensions",
+     "t": 18.6,
+     "word": "four"
+    },
+    {
+     "label": "Core Skills",
+     "t": 20.1,
+     "word": "Core"
+    },
+    {
+     "label": "Working with AI",
+     "t": 20.84,
+     "word": "working"
+    },
+    {
+     "label": "Ownership",
+     "t": 22.1,
+     "word": "ownership,"
+    },
+    {
+     "label": "Human Contribution",
+     "t": 22.76,
+     "word": "human"
+    }
+   ]
+  },
+  {
+   "id": "s4-create",
+   "start": 24.71,
+   "end": 43.92,
+   "voStart": 25.11,
+   "voDuration": 18.314,
+   "beats": [
+    {
+     "label": "creating an assessment",
+     "t": 25.67,
+     "word": "creating"
+    },
+    {
+     "label": "ready-made template",
+     "t": 27.39,
+     "word": "ready"
+    },
+    {
+     "label": "role requirements",
+     "t": 29.85,
+     "word": "role"
+    },
+    {
+     "label": "use AI to build one",
+     "t": 31.49,
+     "word": "use"
+    },
+    {
+     "label": "describing what you need",
+     "t": 33.75,
+     "word": "describing"
+    },
+    {
+     "label": "Lever or Ashby",
+     "t": 38.95,
+     "word": "Lever"
+    },
+    {
+     "label": "existing hiring workflow",
+     "t": 41.89,
+     "word": "existing"
+    }
+   ]
+  },
+  {
+   "id": "s5-candidate",
+   "start": 43.92,
+   "end": 63.85,
+   "voStart": 44.32,
+   "voDuration": 19.032,
+   "beats": [
+    {
+     "label": "realistic, role-specific tasks",
+     "t": 45.44,
+     "word": "realistic,"
+    },
+    {
+     "label": "dedicated workspace",
+     "t": 47.96,
+     "word": "dedicated"
+    },
+    {
+     "label": "AI coding tools",
+     "t": 49.6,
+     "word": "AI"
+    },
+    {
+     "label": "Claude Code built in",
+     "t": 51.48,
+     "word": "Claude"
+    },
+    {
+     "label": "Codex",
+     "t": 52.44,
+     "word": "Codex,"
+    },
+    {
+     "label": "GitHub Copilot",
+     "t": 53.3,
+     "word": "GitHub"
+    },
+    {
+     "label": "and more",
+     "t": 54.52,
+     "word": "and"
+    },
+    {
+     "label": "work with AI to solve problems",
+     "t": 56.1,
+     "word": "work"
+    },
+    {
+     "label": "looks beyond the final result",
+     "t": 59.14,
+     "word": "looks"
+    }
+   ]
+  },
+  {
+   "id": "s6-skills-ai",
+   "start": 63.85,
+   "end": 75.53,
+   "voStart": 64.15,
+   "voDuration": 10.977,
+   "beats": [
+    {
+     "label": "Core Skills",
+     "t": 64.15,
+     "word": "Core"
+    },
+    {
+     "label": "role-specific competencies",
+     "t": 67.39,
+     "word": "role"
+    },
+    {
+     "label": "Working with AI",
+     "t": 69.51,
+     "word": "Working"
+    },
+    {
+     "label": "guide AI",
+     "t": 71.37,
+     "word": "guide"
+    },
+    {
+     "label": "make decisions",
+     "t": 72.53,
+     "word": "make"
+    },
+    {
+     "label": "verify its output",
+     "t": 73.89,
+     "word": "verify"
+    }
+   ]
+  },
+  {
+   "id": "s7-report",
+   "start": 75.53,
+   "end": 96.92,
+   "voStart": 75.83,
+   "voDuration": 20.29,
+   "beats": [
+    {
+     "label": "Ownership",
+     "t": 75.83,
+     "word": "Ownership"
+    },
+    {
+     "label": "Human Contribution",
+     "t": 76.57,
+     "word": "human"
+    },
+    {
+     "label": "responsibility",
+     "t": 78.63,
+     "word": "responsibility"
+    },
+    {
+     "label": "value beyond AI output",
+     "t": 81.01,
+     "word": "the"
+    },
+    {
+     "label": "assessment report brings together",
+     "t": 84.49,
+     "word": "The"
+    },
+    {
+     "label": "skill scores",
+     "t": 86.07,
+     "word": "skill"
+    },
+    {
+     "label": "AI collaboration insights",
+     "t": 87.31,
+     "word": "AI"
+    },
+    {
+     "label": "Code Review",
+     "t": 89.31,
+     "word": "code"
+    },
+    {
+     "label": "Video Q&A",
+     "t": 90.35,
+     "word": "video"
+    },
+    {
+     "label": "Interview Guide",
+     "t": 91.79,
+     "word": "The"
+    },
+    {
+     "label": "follow-up questions",
+     "t": 94.89,
+     "word": "follow"
+    }
+   ]
+  },
+  {
+   "id": "s8-outcome",
+   "start": 96.92,
+   "end": 105.59,
+   "voStart": 97.42,
+   "voDuration": 7.574,
+   "beats": [
+    {
+     "label": "See beyond the final output",
+     "t": 97.42,
+     "word": "See"
+    },
+    {
+     "label": "Understand strengths",
+     "t": 100.06,
+     "word": "understand"
+    },
+    {
+     "label": "Identify gaps",
+     "t": 101.54,
+     "word": "identify"
+    },
+    {
+     "label": "Build a shortlist backed by evidence",
+     "t": 102.84,
+     "word": "build"
+    }
+   ]
+  },
+  {
+   "id": "s9-close",
+   "start": 105.59,
+   "end": 112.95,
+   "voStart": 105.99,
+   "voDuration": 6.262,
+   "beats": [
+    {
+     "label": "When AI can do the work",
+     "t": 105.99,
+     "word": "When"
+    },
+    {
+     "label": "know what makes a candidate stand out",
+     "t": 107.53,
+     "word": "know"
+    },
+    {
+     "label": "developer and non-developer roles",
+     "t": 110.11,
+     "word": "across"
+    }
+   ]
+  },
+  {
+   "id": "s10-cta",
+   "start": 112.95,
+   "end": 118.3,
+   "voStart": 113.25,
+   "voDuration": 2.447,
+   "beats": [
+    {
+     "label": "VibeLevel Screening",
+     "t": 113.25,
+     "word": "Vibe"
+    },
+    {
+     "label": "Book a demo",
+     "t": 115.01,
+     "word": "Book"
+    }
+   ]
+  }
+ ]
+}

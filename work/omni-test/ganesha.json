@@ -1,0 +1,8 @@
+{
+  "model": "gemini-omni-1.2-flash",
+  "store": true,
+  "background": true,
+  "input": [{"type": "text", "text": "A serene, reverent cinematic shot of Lord Ganesha walking slowly and gracefully through fresh snow in a quiet Himalayan mountain landscape at golden hour. Lord Ganesha in his traditional form: elephant head with one broken tusk, gentle kind eyes, four arms holding a modak, a lotus and a small axe, wearing a rich saffron-and-gold silk dhoti, gold crown and ornaments, a soft divine golden glow around him. Each step leaves soft footprints; gentle snowflakes drifting in warm sunlight; snow-covered pines and distant peaks. Slow tracking camera alongside him, shallow depth of field, photoreal, majestic and peaceful, devotional mood. Soft wind and a faint temple bell in the distance. No text."}],
+  "response_format": [{"type": "video", "aspect_ratio": "16:9", "resolution": "1080p", "duration": "8s"}],
+  "generation_config": {"video_config": {"task": "text_to_video"}}
+}

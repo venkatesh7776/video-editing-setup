@@ -1,0 +1,322 @@
+{
+ "voice": "af_heart",
+ "scenes": {
+  "s1-problem": {
+   "id": "s1-problem",
+   "file": "s1-problem.wav",
+   "duration": 9.505,
+   "chunks": [
+    {
+     "text": "Resumes tell you what candidates have done.",
+     "start": 0.0,
+     "end": 2.094
+    },
+    {
+     "text": "Interviews tell you how well they present themselves.",
+     "start": 2.474,
+     "end": 5.226
+    },
+    {
+     "text": "But neither necessarily shows how they perform when the",
+     "start": 5.606,
+     "end": 8.669
+    },
+    {
+     "text": "work gets real.",
+     "start": 8.669,
+     "end": 9.505
+    }
+   ]
+  },
+  "s3-intro": {
+   "id": "s3-intro",
+   "file": "s3-intro.wav",
+   "duration": 12.354,
+   "chunks": [
+    {
+     "text": "That\u2019s where VibeLevel Screening comes in.",
+     "start": 0.0,
+     "end": 2.073
+    },
+    {
+     "text": "Through realistic, role-specific tasks,",
+     "start": 2.453,
+     "end": 4.973
+    },
+    {
+     "text": "it evaluates candidates across four dimensions:",
+     "start": 4.973,
+     "end": 8.011
+    },
+    {
+     "text": "Core Skills, Working with AI, Ownership, and Human Contribution.",
+     "start": 8.391,
+     "end": 12.354
+    }
+   ]
+  },
+  "n4-candidate": {
+   "id": "n4-candidate",
+   "file": "n4-candidate.wav",
+   "duration": 18.305,
+   "chunks": [
+    {
+     "text": "Candidates tackle these tasks in a dedicated workspace with",
+     "start": 0.0,
+     "end": 4.037
+    },
+    {
+     "text": "AI coding tools such as Claude Code,",
+     "start": 4.037,
+     "end": 6.5
+    },
+    {
+     "text": "Codex, GitHub Copilot,",
+     "start": 6.5,
+     "end": 8.006
+    },
+    {
+     "text": "and more built in.",
+     "start": 8.006,
+     "end": 9.237
+    },
+    {
+     "text": "As they work through real challenges,",
+     "start": 9.617,
+     "end": 11.93
+    },
+    {
+     "text": "VibeLevel looks beyond the final output to understand how",
+     "start": 11.93,
+     "end": 15.555
+    },
+    {
+     "text": "they solve problems and collaborate with AI.",
+     "start": 15.555,
+     "end": 18.305
+    }
+   ]
+  },
+  "n5-skills": {
+   "id": "n5-skills",
+   "file": "n5-skills.wav",
+   "duration": 12.444,
+   "chunks": [
+    {
+     "text": "First, Core Skills shows how well candidates apply their",
+     "start": 0.0,
+     "end": 3.215
+    },
+    {
+     "text": "technical knowledge to the task.",
+     "start": 3.215,
+     "end": 5.052
+    },
+    {
+     "text": "Working with AI reveals how effectively they guide AI,",
+     "start": 5.432,
+     "end": 9.144
+    },
+    {
+     "text": "evaluate its suggestions,",
+     "start": 9.144,
+     "end": 10.863
+    },
+    {
+     "text": "and verify the results.",
+     "start": 10.863,
+     "end": 12.444
+    }
+   ]
+  },
+  "n6-ownership": {
+   "id": "n6-ownership",
+   "file": "n6-ownership.wav",
+   "duration": 13.976,
+   "chunks": [
+    {
+     "text": "But technical ability is only part of the picture.",
+     "start": 0.0,
+     "end": 2.844
+    },
+    {
+     "text": "Ownership reveals how candidates take responsibility for their decisions,",
+     "start": 3.224,
+     "end": 7.869
+    },
+    {
+     "text": "while Human Contribution highlights the judgment and value they",
+     "start": 7.869,
+     "end": 11.877
+    },
+    {
+     "text": "bring beyond AI-generated output.",
+     "start": 11.877,
+     "end": 13.976
+    }
+   ]
+  },
+  "n7-create": {
+   "id": "n7-create",
+   "file": "n7-create.wav",
+   "duration": 20.893,
+   "chunks": [
+    {
+     "text": "To evaluate the right skills,",
+     "start": 0.0,
+     "end": 1.796
+    },
+    {
+     "text": "recruiters can start with ready-made assessment templates,",
+     "start": 1.796,
+     "end": 5.388
+    },
+    {
+     "text": "customize them to their role requirements,",
+     "start": 5.388,
+     "end": 7.989
+    },
+    {
+     "text": "or use AI to create assessments by simply describing",
+     "start": 7.989,
+     "end": 11.209
+    },
+    {
+     "text": "what they need.",
+     "start": 11.209,
+     "end": 12.138
+    },
+    {
+     "text": "And these assessments can integrate with ATS platforms such",
+     "start": 12.518,
+     "end": 16.331
+    },
+    {
+     "text": "as Lever and Ashby,",
+     "start": 16.331,
+     "end": 17.581
+    },
+    {
+     "text": "fitting directly into their existing hiring workflow.",
+     "start": 17.581,
+     "end": 20.893
+    }
+   ]
+  },
+  "n8-report": {
+   "id": "n8-report",
+   "file": "n8-report.wav",
+   "duration": 19.575,
+   "chunks": [
+    {
+     "text": "Once candidates complete their assessments,",
+     "start": 0.0,
+     "end": 2.632
+    },
+    {
+     "text": "recruiters get a clearer picture of their performance through",
+     "start": 2.632,
+     "end": 6.365
+    },
+    {
+     "text": "skill scores, AI collaboration insights,",
+     "start": 6.365,
+     "end": 8.813
+    },
+    {
+     "text": "Code Review, and Video Q&A.",
+     "start": 8.813,
+     "end": 10.711
+    },
+    {
+     "text": "The Interview Guide then turns those findings into focused",
+     "start": 11.091,
+     "end": 14.556
+    },
+    {
+     "text": "follow-up questions, helping recruiters explore strengths and gaps in greater depth.",
+     "start": 14.556,
+     "end": 19.575
+    }
+   ]
+  },
+  "n9-outcome": {
+   "id": "n9-outcome",
+   "file": "n9-outcome.wav",
+   "duration": 9.024,
+   "chunks": [
+    {
+     "text": "With a clearer view of how candidates think,",
+     "start": 0.0,
+     "end": 2.776
+    },
+    {
+     "text": "work, and use AI,",
+     "start": 2.776,
+     "end": 3.849
+    },
+    {
+     "text": "you can identify strengths,",
+     "start": 3.849,
+     "end": 5.553
+    },
+    {
+     "text": "uncover gaps, and build a shortlist backed by evidence.",
+     "start": 5.553,
+     "end": 9.024
+    }
+   ]
+  },
+  "s9-close": {
+   "id": "s9-close",
+   "file": "s9-close.wav",
+   "duration": 6.262,
+   "chunks": [
+    {
+     "text": "When AI can do the work,",
+     "start": 0.0,
+     "end": 1.459
+    },
+    {
+     "text": "know what makes a candidate stand out,",
+     "start": 1.459,
+     "end": 3.769
+    },
+    {
+     "text": "across developer and non-developer roles.",
+     "start": 3.769,
+     "end": 6.262
+    }
+   ]
+  },
+  "s10-cta": {
+   "id": "s10-cta",
+   "file": "s10-cta.wav",
+   "duration": 2.447,
+   "chunks": [
+    {
+     "text": "VibeLevel Screening.",
+     "start": 0.0,
+     "end": 1.244
+    },
+    {
+     "text": "Book a demo.",
+     "start": 1.624,
+     "end": 2.447
+    }
+   ]
+  }
+ },
+ "order": [
+  "s1-problem",
+  "s3-intro",
+  "n4-candidate",
+  "n5-skills",
+  "n6-ownership",
+  "n7-create",
+  "n8-report",
+  "n9-outcome",
+  "s9-close",
+  "s10-cta"
+ ]
+}

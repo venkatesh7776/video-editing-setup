@@ -1,0 +1,139 @@
+{
+ "voice": "hm_psi",
+ "scenes": {
+  "l1-hook": {
+   "id": "l1-hook",
+   "file": "l1-hook.wav",
+   "duration": 3.534,
+   "chunks": [
+    {
+     "text": "Still sending wedding invites, as a PDF, on WhatsApp?",
+     "start": 0.0,
+     "end": 3.534
+    }
+   ]
+  },
+  "l2-reveal": {
+   "id": "l2-reveal",
+   "file": "l2-reveal.wav",
+   "duration": 1.931,
+   "chunks": [
+    {
+     "text": "What if your guests got this instead?",
+     "start": 0.0,
+     "end": 1.931
+    }
+   ]
+  },
+  "l3-story": {
+   "id": "l3-story",
+   "file": "l3-story.wav",
+   "duration": 2.466,
+   "chunks": [
+    {
+     "text": "A wedding website that tells your love story,",
+     "start": 0.0,
+     "end": 2.466
+    }
+   ]
+  },
+  "l4-countdown": {
+   "id": "l4-countdown",
+   "file": "l4-countdown.wav",
+   "duration": 1.44,
+   "chunks": [
+    {
+     "text": "counts down to the big day,",
+     "start": 0.0,
+     "end": 1.44
+    }
+   ]
+  },
+  "l5-ceremonies": {
+   "id": "l5-ceremonies",
+   "file": "l5-ceremonies.wav",
+   "duration": 2.104,
+   "chunks": [
+    {
+     "text": "walks guests through every ceremony,",
+     "start": 0.0,
+     "end": 2.104
+    }
+   ]
+  },
+  "l6-rsvp": {
+   "id": "l6-rsvp",
+   "file": "l6-rsvp.wav",
+   "duration": 2.764,
+   "chunks": [
+    {
+     "text": "and collects every RSVP in one tap.",
+     "start": 0.0,
+     "end": 2.764
+    }
+   ]
+  },
+  "l7-any": {
+   "id": "l7-any",
+   "file": "l7-any.wav",
+   "duration": 3.859,
+   "chunks": [
+    {
+     "text": "Any theme.",
+     "start": 0.0,
+     "end": 0.853
+    },
+    {
+     "text": "Any tradition.",
+     "start": 1.233,
+     "end": 2.314
+    },
+    {
+     "text": "Any love story.",
+     "start": 2.694,
+     "end": 3.859
+    }
+   ]
+  },
+  "l8-detail": {
+   "id": "l8-detail",
+   "file": "l8-detail.wav",
+   "duration": 2.465,
+   "chunks": [
+    {
+     "text": "Every detail, designed around the two of you.",
+     "start": 0.0,
+     "end": 2.465
+    }
+   ]
+  },
+  "l9-cta": {
+   "id": "l9-cta",
+   "file": "l9-cta.wav",
+   "duration": 4.175,
+   "chunks": [
+    {
+     "text": "Want one for your wedding?",
+     "start": 0.0,
+     "end": 1.491
+    },
+    {
+     "text": "DM me WEDDING, and let's build yours.",
+     "start": 1.871,
+     "end": 4.175
+    }
+   ]
+  }
+ },
+ "order": [
+  "l1-hook",
+  "l2-reveal",
+  "l3-story",
+  "l4-countdown",
+  "l5-ceremonies",
+  "l6-rsvp",
+  "l7-any",
+  "l8-detail",
+  "l9-cta"
+ ]
+}

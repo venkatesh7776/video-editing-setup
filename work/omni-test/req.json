@@ -1,0 +1,8 @@
+{
+  "model": "gemini-omni-1.2-flash",
+  "store": true,
+  "background": true,
+  "input": [{"type": "text", "text": "Cinematic 16:9 shot: a bright, minimal Scandinavian home office in soft late-afternoon window light. A white desk with a matte-black laptop open, its screen a plain light-grey glow, a small green plant beside it. Slow, smooth dolly-in toward the laptop, shallow depth of field, gentle dust particles in the light. Clean, premium tech-commercial look. No text, no logos, no UI on the screen. Quiet room tone only."}],
+  "response_format": [{"type": "video", "aspect_ratio": "16:9", "resolution": "720p", "duration": "5s"}],
+  "generation_config": {"video_config": {"task": "text_to_video"}}
+}

@@ -1,0 +1,70 @@
+{
+ "voice": "sarvam shubh",
+ "scenes": {
+  "l1-hook": {
+   "id": "l1-hook",
+   "file": "l1-hook.wav",
+   "duration": 4.554,
+   "chunks": []
+  },
+  "l2-reveal": {
+   "id": "l2-reveal",
+   "file": "l2-reveal.wav",
+   "duration": 1.864,
+   "chunks": []
+  },
+  "l3-story": {
+   "id": "l3-story",
+   "file": "l3-story.wav",
+   "duration": 2.259,
+   "chunks": []
+  },
+  "l4-countdown": {
+   "id": "l4-countdown",
+   "file": "l4-countdown.wav",
+   "duration": 1.406,
+   "chunks": []
+  },
+  "l5-ceremonies": {
+   "id": "l5-ceremonies",
+   "file": "l5-ceremonies.wav",
+   "duration": 2.353,
+   "chunks": []
+  },
+  "l6-rsvp": {
+   "id": "l6-rsvp",
+   "file": "l6-rsvp.wav",
+   "duration": 2.068,
+   "chunks": []
+  },
+  "l7-any": {
+   "id": "l7-any",
+   "file": "l7-any.wav",
+   "duration": 3.2,
+   "chunks": []
+  },
+  "l8-detail": {
+   "id": "l8-detail",
+   "file": "l8-detail.wav",
+   "duration": 2.704,
+   "chunks": []
+  },
+  "l9-cta": {
+   "id": "l9-cta",
+   "file": "l9-cta.wav",
+   "duration": 3.916,
+   "chunks": []
+  }
+ },
+ "order": [
+  "l1-hook",
+  "l2-reveal",
+  "l3-story",
+  "l4-countdown",
+  "l5-ceremonies",
+  "l6-rsvp",
+  "l7-any",
+  "l8-detail",
+  "l9-cta"
+ ]
+}
