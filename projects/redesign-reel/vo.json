@@ -1,0 +1,687 @@
+[
+ {
+  "id": "01",
+  "file": "01 - I turn this outdated landing page",
+  "section": "INTRO / HOOK",
+  "text": "I turn this outdated SaaS landing page into a modern, conversion-focused experience.",
+  "duration": 5.48,
+  "words": [
+   {
+    "w": "I",
+    "s": 0.0,
+    "e": 0.94
+   },
+   {
+    "w": "turn",
+    "s": 0.94,
+    "e": 1.12
+   },
+   {
+    "w": "this",
+    "s": 1.12,
+    "e": 1.36
+   },
+   {
+    "w": "outdated",
+    "s": 1.36,
+    "e": 1.78
+   },
+   {
+    "w": "SaaS",
+    "s": 1.78,
+    "e": 2.04
+   },
+   {
+    "w": "landing",
+    "s": 2.04,
+    "e": 2.34
+   },
+   {
+    "w": "page",
+    "s": 2.34,
+    "e": 2.6
+   },
+   {
+    "w": "into",
+    "s": 2.6,
+    "e": 3.0
+   },
+   {
+    "w": "a",
+    "s": 3.0,
+    "e": 3.18
+   },
+   {
+    "w": "modern,",
+    "s": 3.18,
+    "e": 3.52
+   },
+   {
+    "w": "conversion-focused",
+    "s": 3.52,
+    "e": 4.48
+   },
+   {
+    "w": "experience.",
+    "s": 4.48,
+    "e": 5.04
+   }
+  ]
+ },
+ {
+  "id": "02",
+  "file": "02 - Here's how",
+  "section": "INTRO / HOOK",
+  "text": "Here's how.",
+  "duration": 2.3,
+  "words": [
+   {
+    "w": "Here's",
+    "s": 0.0,
+    "e": 1.7
+   },
+   {
+    "w": "how.",
+    "s": 1.7,
+    "e": 1.92
+   }
+  ]
+ },
+ {
+  "id": "03",
+  "file": "03 - Problem",
+  "section": "THE PROBLEMS",
+  "text": "The first problem? The hero section was overloaded with information, making the product's core value proposition difficult to understand. The second problem? Lengthy problem sections made the content difficult to scan and understand. And finally, the features section didn't have proper structure or visual separation.",
+  "duration": 18.088,
+  "words": [
+   {
+    "w": "The",
+    "s": 0.0,
+    "e": 0.94
+   },
+   {
+    "w": "first",
+    "s": 0.94,
+    "e": 1.12
+   },
+   {
+    "w": "problem?",
+    "s": 1.12,
+    "e": 1.56
+   },
+   {
+    "w": "The",
+    "s": 1.56,
+    "e": 2.08
+   },
+   {
+    "w": "hero",
+    "s": 2.08,
+    "e": 2.18
+   },
+   {
+    "w": "section",
+    "s": 2.18,
+    "e": 2.36
+   },
+   {
+    "w": "was",
+    "s": 2.36,
+    "e": 2.6
+   },
+   {
+    "w": "overloaded",
+    "s": 2.6,
+    "e": 2.98
+   },
+   {
+    "w": "with",
+    "s": 2.98,
+    "e": 3.28
+   },
+   {
+    "w": "information,",
+    "s": 3.28,
+    "e": 3.78
+   },
+   {
+    "w": "making",
+    "s": 4.36,
+    "e": 4.58
+   },
+   {
+    "w": "the",
+    "s": 4.58,
+    "e": 4.84
+   },
+   {
+    "w": "product's",
+    "s": 4.84,
+    "e": 5.1
+   },
+   {
+    "w": "core",
+    "s": 5.1,
+    "e": 5.32
+   },
+   {
+    "w": "value",
+    "s": 5.32,
+    "e": 5.58
+   },
+   {
+    "w": "proposition",
+    "s": 5.58,
+    "e": 6.04
+   },
+   {
+    "w": "difficult",
+    "s": 6.04,
+    "e": 6.54
+   },
+   {
+    "w": "to",
+    "s": 6.54,
+    "e": 6.82
+   },
+   {
+    "w": "understand.",
+    "s": 6.82,
+    "e": 7.2
+   },
+   {
+    "w": "The",
+    "s": 7.98,
+    "e": 8.14
+   },
+   {
+    "w": "second",
+    "s": 8.14,
+    "e": 8.3
+   },
+   {
+    "w": "problem?",
+    "s": 8.3,
+    "e": 8.72
+   },
+   {
+    "w": "Lengthy",
+    "s": 9.0,
+    "e": 9.12
+   },
+   {
+    "w": "problem",
+    "s": 9.12,
+    "e": 9.44
+   },
+   {
+    "w": "sections",
+    "s": 9.44,
+    "e": 9.82
+   },
+   {
+    "w": "made",
+    "s": 9.82,
+    "e": 10.46
+   },
+   {
+    "w": "the",
+    "s": 10.46,
+    "e": 10.66
+   },
+   {
+    "w": "content",
+    "s": 10.66,
+    "e": 10.94
+   },
+   {
+    "w": "difficult",
+    "s": 10.94,
+    "e": 11.2
+   },
+   {
+    "w": "to",
+    "s": 11.2,
+    "e": 11.5
+   },
+   {
+    "w": "scan",
+    "s": 11.5,
+    "e": 11.8
+   },
+   {
+    "w": "and",
+    "s": 11.8,
+    "e": 12.06
+   },
+   {
+    "w": "understand.",
+    "s": 12.06,
+    "e": 12.44
+   },
+   {
+    "w": "And",
+    "s": 13.08,
+    "e": 13.18
+   },
+   {
+    "w": "finally,",
+    "s": 13.18,
+    "e": 13.48
+   },
+   {
+    "w": "the",
+    "s": 14.04,
+    "e": 14.26
+   },
+   {
+    "w": "features",
+    "s": 14.26,
+    "e": 14.5
+   },
+   {
+    "w": "section",
+    "s": 14.5,
+    "e": 14.92
+   },
+   {
+    "w": "didn't",
+    "s": 14.92,
+    "e": 15.46
+   },
+   {
+    "w": "have",
+    "s": 15.46,
+    "e": 15.64
+   },
+   {
+    "w": "proper",
+    "s": 15.76,
+    "e": 15.98
+   },
+   {
+    "w": "structure",
+    "s": 15.98,
+    "e": 16.38
+   },
+   {
+    "w": "or",
+    "s": 16.38,
+    "e": 16.74
+   },
+   {
+    "w": "visual",
+    "s": 17.02,
+    "e": 17.2
+   },
+   {
+    "w": "separation.",
+    "s": 17.2,
+    "e": 17.6
+   }
+  ]
+ },
+ {
+  "id": "04",
+  "file": "04 - Solution",
+  "section": "THE SOLUTIONS",
+  "text": "To solve these problems, here's what I changed. First, I simplified the hero with clearer messaging and a product demo video. Next, I transformed lengthy explanations into three simple, visually engaging problem cards. Finally, I introduced a dedicated VibeLevel Screening section with clearly structured product features.",
+  "duration": 22.291,
+  "words": [
+   {
+    "w": "To",
+    "s": 0.0,
+    "e": 1.36
+   },
+   {
+    "w": "solve",
+    "s": 1.36,
+    "e": 1.54
+   },
+   {
+    "w": "these",
+    "s": 1.54,
+    "e": 1.74
+   },
+   {
+    "w": "problems,",
+    "s": 1.74,
+    "e": 2.14
+   },
+   {
+    "w": "here's",
+    "s": 2.6,
+    "e": 2.76
+   },
+   {
+    "w": "what",
+    "s": 2.76,
+    "e": 2.9
+   },
+   {
+    "w": "I",
+    "s": 2.9,
+    "e": 3.04
+   },
+   {
+    "w": "changed.",
+    "s": 3.04,
+    "e": 3.4
+   },
+   {
+    "w": "First,",
+    "s": 4.68,
+    "e": 4.76
+   },
+   {
+    "w": "I",
+    "s": 4.88,
+    "e": 4.9
+   },
+   {
+    "w": "simplified",
+    "s": 4.9,
+    "e": 5.28
+   },
+   {
+    "w": "the",
+    "s": 5.28,
+    "e": 5.48
+   },
+   {
+    "w": "hero",
+    "s": 5.48,
+    "e": 5.66
+   },
+   {
+    "w": "with",
+    "s": 5.88,
+    "e": 6.22
+   },
+   {
+    "w": "clearer",
+    "s": 6.22,
+    "e": 6.58
+   },
+   {
+    "w": "messaging",
+    "s": 6.58,
+    "e": 6.96
+   },
+   {
+    "w": "and",
+    "s": 6.96,
+    "e": 7.52
+   },
+   {
+    "w": "a",
+    "s": 7.52,
+    "e": 7.52
+   },
+   {
+    "w": "product",
+    "s": 7.52,
+    "e": 8.08
+   },
+   {
+    "w": "demo",
+    "s": 8.08,
+    "e": 8.34
+   },
+   {
+    "w": "video.",
+    "s": 8.34,
+    "e": 8.86
+   },
+   {
+    "w": "Next,",
+    "s": 9.32,
+    "e": 9.6
+   },
+   {
+    "w": "I",
+    "s": 9.6,
+    "e": 9.78
+   },
+   {
+    "w": "transformed",
+    "s": 9.78,
+    "e": 10.22
+   },
+   {
+    "w": "lengthy",
+    "s": 10.22,
+    "e": 10.7
+   },
+   {
+    "w": "explanations",
+    "s": 10.7,
+    "e": 11.24
+   },
+   {
+    "w": "into",
+    "s": 11.24,
+    "e": 11.74
+   },
+   {
+    "w": "three",
+    "s": 11.74,
+    "e": 12.6
+   },
+   {
+    "w": "simple,",
+    "s": 12.6,
+    "e": 13.06
+   },
+   {
+    "w": "visually",
+    "s": 13.06,
+    "e": 13.72
+   },
+   {
+    "w": "engaging",
+    "s": 13.72,
+    "e": 14.16
+   },
+   {
+    "w": "problem",
+    "s": 14.16,
+    "e": 14.56
+   },
+   {
+    "w": "cards.",
+    "s": 14.56,
+    "e": 14.88
+   },
+   {
+    "w": "Finally,",
+    "s": 16.02,
+    "e": 16.22
+   },
+   {
+    "w": "I",
+    "s": 16.44,
+    "e": 16.64
+   },
+   {
+    "w": "introduced",
+    "s": 16.64,
+    "e": 16.94
+   },
+   {
+    "w": "a",
+    "s": 16.94,
+    "e": 16.94
+   },
+   {
+    "w": "dedicated",
+    "s": 16.94,
+    "e": 17.7
+   },
+   {
+    "w": "VibeLevel",
+    "s": 17.7,
+    "e": 18.26
+   },
+   {
+    "w": "Screening",
+    "s": 18.26,
+    "e": 18.52
+   },
+   {
+    "w": "section",
+    "s": 18.52,
+    "e": 19.4
+   },
+   {
+    "w": "with",
+    "s": 19.4,
+    "e": 19.92
+   },
+   {
+    "w": "clearly",
+    "s": 19.92,
+    "e": 20.48
+   },
+   {
+    "w": "structured",
+    "s": 20.48,
+    "e": 20.94
+   },
+   {
+    "w": "product",
+    "s": 20.94,
+    "e": 21.52
+   },
+   {
+    "w": "features.",
+    "s": 21.52,
+    "e": 21.86
+   }
+  ]
+ },
+ {
+  "id": "05",
+  "file": "05 - Final transformation",
+  "section": "FINAL TRANSFORMATION",
+  "text": "And here's the final transformation. This is the before, and this is the after. That's how I turn SaaS websites into conversion-focused experiences.",
+  "duration": 9.892,
+  "words": [
+   {
+    "w": "And",
+    "s": 0.0,
+    "e": 0.84
+   },
+   {
+    "w": "here's",
+    "s": 0.84,
+    "e": 1.16
+   },
+   {
+    "w": "the",
+    "s": 1.16,
+    "e": 1.3
+   },
+   {
+    "w": "final",
+    "s": 1.3,
+    "e": 1.48
+   },
+   {
+    "w": "transformation.",
+    "s": 1.48,
+    "e": 1.98
+   },
+   {
+    "w": "This",
+    "s": 2.66,
+    "e": 2.88
+   },
+   {
+    "w": "is",
+    "s": 2.88,
+    "e": 3.02
+   },
+   {
+    "w": "the",
+    "s": 3.02,
+    "e": 3.14
+   },
+   {
+    "w": "before,",
+    "s": 3.14,
+    "e": 3.42
+   },
+   {
+    "w": "and",
+    "s": 3.42,
+    "e": 4.08
+   },
+   {
+    "w": "this",
+    "s": 4.08,
+    "e": 4.3
+   },
+   {
+    "w": "is",
+    "s": 4.3,
+    "e": 4.48
+   },
+   {
+    "w": "the",
+    "s": 4.48,
+    "e": 4.56
+   },
+   {
+    "w": "after.",
+    "s": 4.56,
+    "e": 4.9
+   },
+   {
+    "w": "That's",
+    "s": 5.68,
+    "e": 6.0
+   },
+   {
+    "w": "how",
+    "s": 6.0,
+    "e": 6.22
+   },
+   {
+    "w": "I",
+    "s": 6.22,
+    "e": 6.7
+   },
+   {
+    "w": "turn",
+    "s": 6.7,
+    "e": 6.96
+   },
+   {
+    "w": "SaaS",
+    "s": 6.96,
+    "e": 7.28
+   },
+   {
+    "w": "websites",
+    "s": 7.28,
+    "e": 7.46
+   },
+   {
+    "w": "into",
+    "s": 7.46,
+    "e": 7.88
+   },
+   {
+    "w": "conversion-focused",
+    "s": 7.88,
+    "e": 8.88
+   },
+   {
+    "w": "experiences.",
+    "s": 8.88,
+    "e": 9.4
+   }
+  ]
+ }
+]

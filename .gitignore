@@ -1,0 +1,33 @@
+# Dependencies / environments (rebuild with npm install + the venv setup in README)
+node_modules/
+.venv/
+.venv-ai/
+.venv-tts/
+
+# Caches (whisper models, downloads, saved login sessions) — never commit
+.cache/
+out/
+*.log
+__pycache__/
+.DS_Store
+
+# Generated render intermediates (regenerable); AI-generated assets in work/ ARE kept
+work/public/
+work/stills/
+work/**/scan/
+work/**/render-raw*
+work/**/*.mov
+
+# Files over GitHub's 100 MB limit — uploaded as assets of the GitHub Release "media-2026-11-17" instead
+Raw footage for 1st reel/saas product video raw.MOV
+Raw footage for 1st reel/2.MOV
+Raw footage for 1st reel/3.MOV
+Raw footage for 1st reel/4.MOV
+Raw footage for 1st reel/new.mov
+wedding website assets/hindu website raw.MOV
+QR assets/IMG_1900 3.MOV
+output/telugu-wedding-website-reel-4k.mp4
+output/telugu-wedding-website-reel-4k-v2.mp4
+output/temple-wedding-website-reel-4k-v5.mp4
+output/digital-video-invitation-reel-4k-v4.mp4
+output/vibelevel-can-you-get-away-with-it-v4.mp4

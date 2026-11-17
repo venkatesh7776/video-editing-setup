@@ -1,0 +1,10 @@
+[
+ {"id": "s1", "text": "Today, we're going to put VibeLevel Screening to the test. Imagine a candidate receives an assessment link and decides to take a few shortcuts. Let's see how far they can get.", "stability": 0.5},
+ {"id": "s2", "text": "Our candidate has received a 60-minute assessment. He's entered the workspace, reviewed the problem statement and is ready to begin. But first, let's see what shortcuts he has in mind.", "stability": 0.5},
+ {"id": "s3", "text": "First, our candidate decides to copy the entire problem statement and send it to an external AI tool. He gets the solution generated there and plans to bring it back into the assessment. But the moment he switches away from the assessment tab, VibeLevel catches it and displays a warning.", "stability": 0.5},
+ {"id": "s4", "text": "Now, our candidate has the solution ready. All that's left is to copy the generated answer and paste it directly into the assessment workspace. But VibeLevel blocks the external paste immediately.", "stability": 0.5},
+ {"id": "s5", "text": "Fine. There's already an AI assistant inside the assessment. So why do all the work himself? Our candidate simply asks the integrated AI assistant to build the entire solution. It generates the files, writes the code and helps complete the task. He makes a few edits, runs the tests and submits.", "stability": 0.5},
+ {"id": "s6", "text": "Now comes the interesting part. The assessment is submitted, but there's still one thing left: the interview. Our candidate hopes to get through it without really understanding everything the AI has built. Let's see how he handles the questions.", "stability": 0.5},
+ {"id": "s7", "text": "Every attempt leaves behind evidence. Recruiters can review tab-switch warnings, blocked external paste attempts, recorded prompts, file edits, test runs, external assistance indicators, responsible AI checks and Video Q&A insights — all contributing to a clearer picture of the candidate's assessment.", "stability": 0.5},
+ {"id": "s8", "text": "With VibeLevel Screening, it's not just about what candidates submit. It's about how they get there.", "stability": 0.5}
+]

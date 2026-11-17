@@ -1,0 +1,471 @@
+// "Can You Get Away With It?" — design system + rebuilt VibeLevel product UI (from the real screens' labels/layout;
+// nothing invented). Designed at 1920×1080, rendered ×2.
+import {loadFont as loadInter} from '@remotion/google-fonts/Inter';
+import {loadFont as loadMono} from '@remotion/google-fonts/JetBrainsMono';
+import {loadFont as loadOutfit} from '@remotion/google-fonts/Outfit';
+import React, {useLayoutEffect, useRef} from 'react';
+import {Easing, Img, interpolate, staticFile} from 'remotion';
+
+
+
+export const inter = loadInter('normal', {weights: ['400', '500', '600', '700', '800', '900'], subsets: ['latin']}).fontFamily;
+/** Headline / overlay face: Inter (user choice), weights tuned per role in Film.tsx. */
+export const clash = 'Inter';
+export const mono = loadMono('normal', {weights: ['400', '500', '600'], subsets: ['latin']}).fontFamily;
+export const outfit = loadOutfit('normal', {weights: ['500', '600', '700'], subsets: ['latin']}).fontFamily;
+
+export const C = {
+	bg: '#F4F6F3',
+	white: '#FFFFFF',
+	ink: '#0E1512',
+	body: '#46504B',
+	muted: '#8B948F',
+	line: '#E2E7E3',
+	soft: '#EEF2EF',
+	green: '#0B7A3E',
+	greenHi: '#00C95F',
+	pixel: '#00D76B',
+	mint: '#E6F4EC',
+	wordmark: '#0F2B1F',
+	red: '#D93025',
+	redBg: '#FDECEA',
+	amber: '#B7791F',
+	amberBg: '#FFF6DA',
+	amberLine: '#F2D27A',
+	blue: '#2F6BFF',
+	gradA: '#DCEFE2',
+	gradB: '#F6F0D6',
+	claude: '#D97757',
+};
+
+/** Brand gradient (mint → warm cream), from the product site. */
+export const GRAD = `linear-gradient(135deg, ${'#DCEFE2'} 0%, #EAF4E6 42%, #F6F0D6 100%)`;
+
+export const EXPO = Easing.bezier(0.16, 1, 0.3, 1);
+export const SOFT = Easing.bezier(0.25, 0.1, 0.25, 1);
+export const IN_OUT = Easing.bezier(0.65, 0, 0.35, 1);
+export const BACK = Easing.bezier(0.34, 1.56, 0.64, 1);
+export const prog = (t: number, a: number, d: number, e: (x: number) => number = EXPO) => interpolate(t, [a, a + d], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: e});
+export const mix = (a: number, b: number, p: number) => a + (b - a) * p;
+export const hash = (a: number, b: number, c = 0) => {
+	const s = Math.sin(a * 127.1 + b * 311.7 + c * 74.7) * 43758.5453;
+	return s - Math.floor(s);
+};
+/** keyframed value: [[t, v], …] eased with IN_OUT between keys */
+export const keys = (t: number, k: [number, number][], e: (x: number) => number = IN_OUT) => {
+	if (t <= k[0][0]) return k[0][1];
+	for (let i = 1; i < k.length; i++) if (t < k[i][0]) return mix(k[i - 1][1], k[i][1], e((t - k[i - 1][0]) / (k[i][0] - k[i - 1][0])));
+	return k[k.length - 1][1];
+};
+
+// ── brand ───────────────────────────────────────────────────────────────────────────────────────────
+
+export const Star: React.FC<{h: number; style?: React.CSSProperties}> = ({h, style}) => <Img src={staticFile('cyg/img/vl-star.png')} style={{height: h, width: (h * 940) / 1013, display: 'block', ...style}} />;
+
+/** VibeLevel Screening icon — the faceted star inside the product's ringed dial (rebuilt as clean vector). */
+export const ScreeningIcon: React.FC<{size: number; spin?: number; p?: number}> = ({size, spin = 0, p = 1}) => (
+	<div style={{position: 'relative', width: size, height: size}}>
+		<svg viewBox="-50 -50 100 100" width={size} height={size} style={{position: 'absolute', inset: 0}}>
+			<defs>
+				<linearGradient id="dialg" x1="0" y1="0" x2="1" y2="1">
+					<stop offset="0" stopColor="#25E07F" />
+					<stop offset="1" stopColor="#0B7A3E" />
+				</linearGradient>
+			</defs>
+			<circle r={44} fill="#F2FBF5" stroke="url(#dialg)" strokeWidth={5} strokeDasharray={`${276 * p} 400`} transform="rotate(-90)" />
+			<circle r={38} fill="none" stroke="#0B7A3E" strokeOpacity={0.18} strokeWidth={1} />
+			{Array.from({length: 8}, (_, k) => (
+				<line key={k} x1={0} y1={-41} x2={0} y2={-35.5} stroke="#0B7A3E" strokeWidth={2.2} strokeLinecap="round" opacity={0.75 * p} transform={`rotate(${k * 45 + spin})`} />
+			))}
+			<circle r={4.2} cx={31} cy={-31} fill="#1FD877" opacity={p} transform={`rotate(${spin})`} />
+		</svg>
+		<div style={{position: 'absolute', left: size * 0.2, top: size * 0.19, opacity: p, transform: `scale(${mix(0.6, 1, p)})`}}>
+			<Star h={size * 0.6} />
+		</div>
+	</div>
+);
+
+export const Wordmark: React.FC<{size: number; text?: string; color?: string}> = ({size, text = 'VibeLevel', color = C.wordmark}) => (
+	<span style={{fontFamily: outfit, fontWeight: 700, fontSize: size, letterSpacing: '-0.02em', color, lineHeight: 1}}>{text}</span>
+);
+
+/** The VibeLevel logo, top-left, across the film. */
+export const CornerMark: React.FC<{o: number}> = ({o}) =>
+	o > 0.01 ? (
+		<div style={{position: 'absolute', left: 52, top: 32, display: 'flex', alignItems: 'center', gap: 12, opacity: o}}>
+			<Star h={46} />
+			<Wordmark size={38} />
+		</div>
+	) : null;
+
+// ── atmosphere ─────────────────────────────────────────────────────────────────────────────────────
+
+/** Light canvas with a soft green pixel field (v4's motif, light). Drawn on a canvas for speed. */
+export const PixelField: React.FC<{t: number; w?: number; h?: number; strength?: number; cell?: number; horizon?: number}> = ({t, w = 1920, h = 1080, strength = 1, cell = 16, horizon = 0}) => {
+	const ref = useRef<HTMLCanvasElement>(null);
+	useLayoutEffect(() => {
+		const g = ref.current?.getContext('2d');
+		if (!g) return;
+		g.clearRect(0, 0, w, h);
+		const cols = Math.ceil(w / cell);
+		const rows = Math.ceil(h / cell);
+		for (let y = 0; y < rows; y++)
+			for (let x = 0; x < cols; x++) {
+				const n = hash(x, y);
+				const ex = Math.min(x / cols, 1 - x / cols) * 2;
+				let a = 0;
+				const edge = Math.pow(Math.max(0, 1 - ex * 2.4), 2.4);
+				if (n < edge * 0.6) a = 0.12 + 0.8 * Math.pow(0.5 + 0.5 * Math.sin(t * 2.6 + n * 40), 2);
+				if (horizon > 0) {
+					// green pixel horizon: a soft arc rising from the bottom
+					const cx = x / cols - 0.5;
+					const arc = 1 - (0.25 + cx * cx * 1.6) * 0.55;
+					const yy = y / rows;
+					const band = yy - arc;
+					if (band > 0) a = Math.max(a, horizon * Math.max(0, 0.9 - band * 2.6) * (0.55 + 0.45 * Math.sin(t * 2 + n * 40 + x * 0.15)) * (n < 0.6 + band ? 1 : 0.25));
+				}
+				if (a <= 0.02) continue;
+				g.globalAlpha = a * strength;
+				const k = hash(x, y, 9);
+				g.fillStyle = k > 0.8 ? '#5CD693' : k > 0.45 ? '#BFEAD0' : '#FFFFFF';
+				g.fillRect(x * cell + 2, y * cell + 2, cell - 4, cell - 4);
+			}
+	}, [t, w, h, strength, cell, horizon]);
+	return <canvas ref={ref} width={w} height={h} style={{position: 'absolute', inset: 0, width: w, height: h}} />;
+};
+
+/** Brand transition (p 0→1): pixels sweep in until they cover the whole frame (cut happens under full cover at p=0.5),
+ *  then dissolve away in place. One soft event, white/mint with green accents. */
+export const PixelWipe: React.FC<{p: number; dir?: 1 | -1}> = ({p, dir = 1}) => {
+	const ref = useRef<HTMLCanvasElement>(null);
+	useLayoutEffect(() => {
+		const g = ref.current?.getContext('2d');
+		if (!g) return;
+		g.clearRect(0, 0, 1920, 1080);
+		if (p <= 0 || p >= 1) return;
+		const cell = 40;
+		for (let y = 0; y < 27; y++)
+			for (let x = 0; x < 48; x++) {
+				const xx = dir > 0 ? x / 48 : 1 - x / 48;
+				const v = xx * 0.62 + hash(x, y) * 0.38; // 0..1 arrival order
+				const inP = p * 2; // 0..1 during cover
+				const outP = (p - 0.5) * 2; // 0..1 during dissolve
+				let on = p <= 0.5 ? v < inP : hash(x, y, 5) > outP;
+				if (!on) continue;
+				const k = hash(x, y, 3);
+				const fresh = p <= 0.5 ? Math.min(1, (inP - v) * 6) : 1;
+				g.globalAlpha = Math.min(1, 0.6 + fresh * 0.4);
+				g.fillStyle = k > 0.86 ? '#3FD487' : k > 0.6 ? '#9FE2BC' : k > 0.3 ? '#DDF5E7' : '#F7FBF7';
+				g.fillRect(x * cell, y * cell, cell - 2, cell - 2);
+			}
+	}, [p, dir]);
+	return p > 0 && p < 1 ? <canvas ref={ref} width={1920} height={1080} style={{position: 'absolute', inset: 0}} /> : null;
+};
+
+// ── interaction pieces ─────────────────────────────────────────────────────────────────────────────
+
+export const Cursor: React.FC<{x: number; y: number; click?: number; o?: number}> = ({x, y, click = 0, o = 1}) => (
+	<div style={{position: 'absolute', left: x, top: y, opacity: o, pointerEvents: 'none', zIndex: 50}}>
+		{click > 0 && click < 1 ? <div style={{position: 'absolute', left: -22, top: -22, width: 44, height: 44, borderRadius: '50%', border: `2px solid ${C.green}`, opacity: 1 - click, transform: `scale(${0.4 + click * 1.2})`}} /> : null}
+		<svg width={26} height={30} viewBox="0 0 26 30" style={{transform: `scale(${click > 0 && click < 0.4 ? 0.88 : 1})`, filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.28))'}}>
+			<path d="M2 2 L2 24 L8 18.5 L12.5 28 L16.5 26.2 L12.2 17 L20 17 Z" fill="#111" stroke="#fff" strokeWidth={1.6} strokeLinejoin="round" />
+		</svg>
+	</div>
+);
+
+/** Floating keycap combo (⌘C / ⌘V). */
+export const Keycaps: React.FC<{keys: string[]; p: number; x: number; y: number}> = ({keys: ks, p, x, y}) =>
+	p > 0.01 ? (
+		<div style={{position: 'absolute', left: x, top: y, display: 'flex', gap: 10, opacity: Math.min(1, p * 1.6), transform: `translateY(${(1 - p) * 30}px) scale(${mix(0.8, 1, p)})`, zIndex: 40}}>
+			{ks.map((k, i) => (
+				<div key={i} style={{minWidth: 74, height: 74, padding: '0 18px', borderRadius: 16, background: '#fff', boxShadow: `0 2px 0 ${C.line}, 0 10px 0 #D5DBD7, 0 26px 40px -16px rgba(14,21,18,0.35)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: inter, fontWeight: 600, fontSize: 34, color: C.ink, transform: `translateY(${p > 0.6 ? 6 * Math.sin(Math.PI * Math.min(1, (p - 0.6) / 0.4)) : 0}px)`}}>
+					{k}
+				</div>
+			))}
+		</div>
+	) : null;
+
+export const SIGNALS = {
+	tab: {label: 'Tab switch', state: 'Warning shown', tone: 'amber'},
+	paste: {label: 'External paste', state: 'Blocked', tone: 'red'},
+	prompt: {label: 'AI prompts', state: 'Recorded', tone: 'green'},
+	files: {label: 'File edits', state: 'Recorded', tone: 'green'},
+	tests: {label: 'Test runs', state: 'Recorded', tone: 'green'},
+	copy: {label: 'In-app copy/paste', state: 'Recorded', tone: 'green'},
+	qa: {label: 'Video Q&A', state: 'Evaluated', tone: 'green'},
+} as const;
+export type SignalKey = keyof typeof SIGNALS;
+const TONE = {amber: [C.amber, C.amberBg], red: [C.red, C.redBg], green: [C.green, C.mint]} as const;
+
+export const SignalChip: React.FC<{k: SignalKey; p?: number; style?: React.CSSProperties; big?: boolean}> = ({k, p = 1, style, big}) => {
+	const s = SIGNALS[k];
+	const [fg, bg] = TONE[s.tone];
+	return (
+		<div style={{display: 'flex', alignItems: 'center', gap: big ? 16 : 12, padding: big ? '18px 26px 18px 18px' : '11px 16px 11px 12px', borderRadius: big ? 18 : 13, background: '#fff', boxShadow: `0 0 0 1px ${C.line}, 0 18px 34px -20px rgba(14,21,18,0.45)`, opacity: p, transform: `translateY(${(1 - p) * 18}px) scale(${mix(0.9, 1, p)})`, whiteSpace: 'nowrap', ...style}}>
+			<div style={{width: big ? 40 : 28, height: big ? 40 : 28, borderRadius: big ? 10 : 8, background: bg, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, padding: big ? 7 : 5, boxSizing: 'border-box'}}>
+				{Array.from({length: 9}, (_, i) => (
+					<div key={i} style={{background: fg, opacity: hash(i, k.length) > 0.4 ? 1 : 0.35, borderRadius: 1}} />
+				))}
+			</div>
+			<div style={{fontFamily: inter}}>
+				<div style={{fontWeight: 700, fontSize: big ? 26 : 17, color: C.ink, letterSpacing: '-0.01em'}}>{s.label}</div>
+				<div style={{fontWeight: 600, fontSize: big ? 18 : 13, color: fg, marginTop: 2}}>{s.state}</div>
+			</div>
+		</div>
+	);
+};
+
+// ── product UI (rebuilt) ───────────────────────────────────────────────────────────────────────────
+
+export const Tab: React.FC<{title: string; active: boolean; icon: 'vl' | 'nova'; hl?: number; grow?: number}> = ({title, active, icon, hl = 0, grow = 1}) => (
+	<div style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 9, height: 38, padding: `0 ${16 * grow}px`, width: 250 * grow, opacity: grow, overflow: 'hidden', borderRadius: '10px 10px 0 0', background: active ? '#fff' : 'transparent', fontFamily: inter, fontSize: 14, fontWeight: 500, color: active ? C.ink : C.muted, boxShadow: hl > 0 ? `inset 0 0 0 ${2 * hl}px ${C.amber}` : undefined}}>
+		{icon === 'vl' ? <Star h={16} /> : <NovaMark size={16} />}
+		<span style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{title}</span>
+	</div>
+);
+
+export const NovaMark: React.FC<{size: number}> = ({size}) => (
+	<svg width={size} height={size} viewBox="0 0 20 20">
+		<defs>
+			<linearGradient id="nova" x1="0" y1="0" x2="1" y2="1">
+				<stop offset="0" stopColor="#7B61FF" />
+				<stop offset="1" stopColor="#2F6BFF" />
+			</linearGradient>
+		</defs>
+		<path d="M10 1 L12.4 7.6 L19 10 L12.4 12.4 L10 19 L7.6 12.4 L1 10 L7.6 7.6 Z" fill="url(#nova)" />
+	</svg>
+);
+
+/** Browser chrome; `active` 0 = VibeLevel tab, 1 = the external tool tab. */
+export const Browser: React.FC<{w: number; h: number; tabs: {title: string; icon: 'vl' | 'nova'; grow?: number}[]; active: number; url: string; hlTab?: number; children: React.ReactNode; style?: React.CSSProperties}> = ({w, h, tabs, active, url, hlTab = 0, children, style}) => (
+	<div style={{position: 'absolute', width: w, height: h, borderRadius: 18, background: '#E9EDEA', overflow: 'hidden', boxShadow: '0 0 0 1px rgba(14,21,18,0.08), 0 60px 120px -50px rgba(14,21,18,0.45), 0 20px 40px -24px rgba(14,21,18,0.25)', ...style}}>
+		<div style={{display: 'flex', alignItems: 'flex-end', gap: 4, height: 50, padding: '0 14px'}}>
+			<div style={{display: 'flex', gap: 8, marginRight: 14, marginBottom: 16}}>
+				{['#FF5F57', '#FEBC2E', '#28C840'].map((c) => (
+					<div key={c} style={{width: 12, height: 12, borderRadius: '50%', background: c}} />
+				))}
+			</div>
+			{tabs.map((tb, i) => (
+				<Tab key={i} title={tb.title} icon={tb.icon} active={i === active} hl={i === 0 ? hlTab : 0} grow={tb.grow ?? 1} />
+			))}
+		</div>
+		<div style={{height: 44, background: '#fff', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 14, borderBottom: `1px solid ${C.line}`}}>
+			<span style={{color: C.muted, fontSize: 18, fontFamily: inter}}>‹ ›</span>
+			<div style={{flex: 1, height: 30, borderRadius: 15, background: C.soft, display: 'flex', alignItems: 'center', padding: '0 16px', fontFamily: inter, fontSize: 14, color: C.body}}>{url}</div>
+		</div>
+		<div style={{position: 'absolute', top: 94, left: 0, width: w, height: h - 94, background: '#fff', overflow: 'hidden'}}>{children}</div>
+	</div>
+);
+
+export const Btn: React.FC<{children: React.ReactNode; kind?: 'primary' | 'ghost' | 'soft'; press?: number; style?: React.CSSProperties}> = ({children, kind = 'ghost', press = 0, style}) => (
+	<div style={{display: 'inline-flex', alignItems: 'center', gap: 7, height: 34, padding: '0 14px', borderRadius: 8, fontFamily: inter, fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap', background: kind === 'primary' ? C.green : kind === 'soft' ? '#EEF3FF' : 'transparent', color: kind === 'primary' ? '#fff' : kind === 'soft' ? '#2F55D4' : C.body, transform: `scale(${1 - 0.06 * Math.sin(Math.PI * Math.min(1, Math.max(0, press)))})`, boxShadow: press > 0 && press < 1 ? `0 0 0 ${6 * (1 - press)}px rgba(11,122,62,0.25)` : undefined, ...style}}>
+		{children}
+	</div>
+);
+
+export const CODE: [string, string][] = [
+	['k', 'export function generatePassword'],
+	['p', '(length, opts) {'],
+	['c', '  // at least one character type stays on'],
+	['n', '  const pools = ['],
+	['s', "    opts.upper && 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"],
+	['s', "    opts.lower && 'abcdefghijklmnopqrstuvwxyz',"],
+	['s', "    opts.numbers && '0123456789',"],
+	['s', "    opts.symbols && '!@#$%^&*()-_=+[]{}',"],
+	['n', '  ].filter(Boolean);'],
+	['n', '  const all = pools.join("");'],
+	['n', '  return Array.from({ length }, () =>'],
+	['n', '    all[crypto.getRandomValues(new Uint32Array(1))[0] % all.length]'],
+	['n', '  ).join("");'],
+	['p', '}'],
+	['n', ''],
+	['k', 'export function getStrength'],
+	['p', '(pw) {'],
+	['n', '  let score = pw.length >= 12 ? 2 : pw.length >= 8 ? 1 : 0;'],
+	['n', '  score += [/[A-Z]/, /[a-z]/, /\\d/, /[^\\w]/]'],
+	['n', '    .filter((r) => r.test(pw)).length;'],
+	['k', '  return'],
+	['n', " ['weak', 'medium', 'strong', 'very strong'][Math.min(3, score >> 1)];"],
+	['p', '}'],
+];
+const TOK: Record<string, string> = {k: '#7C3AED', p: '#0E1512', c: '#8B948F', n: '#1F2A24', s: '#0B7A3E'};
+
+/** Code lines; `shown` = how many characters are revealed (streaming). */
+export const Code: React.FC<{lines: [string, string][]; shown: number; size?: number; lh?: number; gutter?: boolean; hl?: [number, number, string][]; caret?: boolean}> = ({lines, shown, size = 15, lh = 1.75, gutter = true, hl = [], caret}) => {
+	let left = shown;
+	return (
+		<div style={{fontFamily: mono, fontSize: size, lineHeight: lh, whiteSpace: 'pre'}}>
+			{lines.map(([k, txt], i) => {
+				const vis = Math.max(0, Math.min(txt.length, left));
+				left -= txt.length + 1;
+				const h = hl.find(([a, b]) => i >= a && i <= b);
+				if (vis <= 0 && txt.length > 0 && left < -1) return null;
+				return (
+					<div key={i} style={{display: 'flex', background: h ? h[2] : undefined, borderRadius: 4}}>
+						{gutter ? <span style={{width: 34, color: '#B5BDB8', textAlign: 'right', marginRight: 16, flexShrink: 0}}>{i + 1}</span> : null}
+						<span style={{color: TOK[k]}}>
+							{txt.slice(0, vis)}
+							{caret && vis < txt.length && vis > 0 ? <span style={{background: C.green, color: C.green}}>|</span> : null}
+						</span>
+					</div>
+				);
+			})}
+		</div>
+	);
+};
+export const CODE_LEN = CODE.reduce((s, [, l]) => s + l.length + 1, 0);
+
+export const REQS = [
+	'Use AI Code Assistant',
+	'Write your logic in generator.js and your UI in index.html',
+	'A user should be able to set the password length using a slider or input (range: 4 to 64)',
+	'A user should be able to toggle character types: uppercase, lowercase, numbers, symbols',
+	'At least one character type must be selected at all times',
+	'Clicking generate should produce a new random password matching the selected options',
+	'The generated password should be displayed clearly on screen',
+	'A copy button should copy the password to the clipboard',
+	'A strength indicator should visually show password strength (weak, medium, strong, very strong)',
+	'There should be a way to regenerate without changing settings',
+];
+
+/** Problem tab (rebuilt from the real screen). `sel` 0–1 = selection sweep over the statement. */
+export const ProblemPage: React.FC<{w: number; h: number; scroll?: number; sel?: number; start?: number}> = ({w, h, scroll = 0, sel = 0, start = 0}) => (
+	<div style={{position: 'absolute', inset: 0, background: '#F7F8F7', fontFamily: inter}}>
+		<div style={{height: 56, background: '#fff', borderBottom: `1px solid ${C.line}`, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 26}}>
+			<div style={{display: 'flex', alignItems: 'center', gap: 8, color: C.green, fontWeight: 600, fontSize: 15, borderBottom: `2px solid ${C.green}`, height: 56}}>Problem</div>
+			<div style={{color: C.body, fontSize: 15, fontWeight: 500}}>Rules</div>
+			<div style={{color: C.body, fontSize: 15, fontWeight: 500}}>Evaluation Criteria</div>
+			<div style={{flex: 1}} />
+			<Btn kind="primary" press={start}>Start Coding →</Btn>
+		</div>
+		<div style={{position: 'absolute', left: (w - 900) / 2, top: 86 - scroll, width: 900}}>
+			<div style={{fontSize: 34, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em'}}>Password Generator</div>
+			<div style={{width: 70, height: 4, borderRadius: 2, background: C.green, marginTop: 10}} />
+			<div style={{position: 'relative', marginTop: 26, padding: '22px 26px', borderRadius: 12, background: '#fff', boxShadow: `0 0 0 1px ${C.line}`}}>
+				<div style={{fontSize: 18, fontWeight: 700, color: C.green}}>Scenario</div>
+				<div style={{fontSize: 15, lineHeight: 1.6, color: C.body, marginTop: 8}}>You're a frontend engineer at a tech blog that publishes security guides. Readers keep asking for a trustworthy way to create strong passwords without leaving the page, and the editors want a tool they can embed in their articles.</div>
+			</div>
+			<div style={{position: 'relative', marginTop: 18, padding: '22px 26px', borderRadius: 12, background: '#fff', boxShadow: `0 0 0 1px ${C.line}`}}>
+				<div style={{fontSize: 18, fontWeight: 700, color: C.green}}>Requirements</div>
+				{REQS.map((r, i) => (
+					<div key={i} style={{display: 'flex', gap: 12, alignItems: 'baseline', marginTop: 12, fontSize: 15, color: C.body}}>
+						<span style={{width: 22, height: 22, borderRadius: '50%', background: C.soft, fontSize: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{i + 1}</span>
+						{r}
+					</div>
+				))}
+			</div>
+			{sel > 0 ? <div style={{position: 'absolute', left: 0, top: 50, width: 900, height: 690 * Math.min(1, sel), background: 'rgba(47,107,255,0.16)', borderRadius: 6, mixBlendMode: 'multiply'}} /> : null}
+		</div>
+	</div>
+);
+
+/** The coding workspace (rebuilt). */
+export type WS = {
+	timer: string;
+	file?: string;
+	code?: number; // characters revealed in the editor
+	codeHl?: [number, number, string][];
+	banner?: number; // tab-switch banner 0–1
+	toast?: number; // external paste toast 0–1
+	agent?: React.ReactNode;
+	agentGlow?: number;
+	terminal?: string[];
+	press?: {run?: number; submit?: number};
+	treeHl?: string[];
+	editorOverlay?: React.ReactNode;
+};
+const FILES = ['tests', 'generator.test.js', 'generator.js', 'index.html', 'package.json', 'style.css', 'vibelevel.config.json', 'vite.config.mjs'];
+export const Workspace: React.FC<{w: number; h: number; s: WS}> = ({w, h, s}) => {
+	const agentW = 400;
+	const treeW = 230;
+	const head = 56;
+	const term = 150;
+	return (
+		<div style={{position: 'absolute', inset: 0, background: '#fff', fontFamily: inter}}>
+			{/* header */}
+			<div style={{height: head, borderBottom: `1px solid ${C.line}`, display: 'flex', alignItems: 'center', padding: '0 18px', gap: 12}}>
+				<Star h={20} />
+				<div style={{height: 32, padding: '0 12px', borderRadius: 8, boxShadow: `0 0 0 1px ${C.line}`, display: 'flex', alignItems: 'center', fontSize: 14, fontWeight: 500, color: C.ink}}>Problem</div>
+				<div style={{fontSize: 15, fontWeight: 700, color: C.ink}}>Password Generator</div>
+				<div style={{flex: 1}} />
+				<div style={{display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: C.green, fontVariantNumeric: 'tabular-nums'}}>⏱ {s.timer}</div>
+				<Btn>↺ Reset</Btn>
+				<Btn style={{opacity: 0.45}}>Save</Btn>
+				<Btn kind="soft" press={s.press?.run}>Run Tests</Btn>
+				<Btn kind="soft">▷ Run App</Btn>
+				<Btn kind="primary" press={s.press?.submit}>Submit</Btn>
+			</div>
+			{/* banner (real copy) */}
+			{(s.banner ?? 0) > 0.01 ? (
+				<div style={{position: 'absolute', left: treeW, top: head, width: w - treeW - agentW, height: 64 * (s.banner ?? 0), overflow: 'hidden', zIndex: 5}}>
+					<div style={{position: 'absolute', bottom: 0, left: 0, right: 0, height: 64, background: C.amberBg, borderBottom: `1px solid ${C.amberLine}`, display: 'flex', alignItems: 'center', gap: 12, padding: '0 18px', fontSize: 14.5, lineHeight: 1.35, color: '#8A5A0B', fontWeight: 500}}>
+						<span style={{width: 22, height: 22, borderRadius: '50%', border: '2px solid #C08A1E', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, flexShrink: 0}}>!</span>
+						You moved away from the assessment tab. Please stay focused — repeated tab switches may disqualify your submission.
+					</div>
+				</div>
+			) : null}
+			{/* files */}
+			<div style={{position: 'absolute', left: 0, top: head, width: treeW, bottom: 0, borderRight: `1px solid ${C.line}`, padding: '16px 14px', boxSizing: 'border-box'}}>
+				<div style={{fontSize: 12, fontWeight: 700, color: C.muted, letterSpacing: '0.08em'}}>FILES</div>
+				{FILES.map((f, i) => {
+					const on = s.file === f;
+					const hl = s.treeHl?.includes(f);
+					return (
+						<div key={f} style={{marginTop: i === 0 ? 14 : 4, padding: '7px 10px', paddingLeft: i === 1 ? 26 : 10, borderRadius: 7, fontFamily: mono, fontSize: 13, color: on ? C.green : C.body, background: on ? C.mint : hl ? '#F0FAF4' : undefined, boxShadow: hl ? `inset 2px 0 0 ${C.greenHi}` : undefined}}>
+							{i === 0 ? '▾ ' : ''}
+							{f}
+						</div>
+					);
+				})}
+			</div>
+			{/* editor */}
+			<div style={{position: 'absolute', left: treeW, top: head + 64 * (s.banner ?? 0), width: w - treeW - agentW, bottom: term, padding: '18px 10px', boxSizing: 'border-box', overflow: 'hidden'}}>
+				<div style={{fontFamily: mono, fontSize: 13, color: C.muted, marginBottom: 10, paddingLeft: 10}}>{s.file ?? 'style.css'}</div>
+				{(s.code ?? 0) > 0 ? <Code lines={CODE} shown={s.code ?? 0} size={14} lh={1.7} hl={s.codeHl} caret /> : <div style={{fontFamily: mono, fontSize: 14, color: '#B5BDB8', paddingLeft: 10}}>1 &nbsp;&nbsp;{(s.file ?? 'style.css').endsWith('.css') ? '/* Add your styles here */' : '// your code here'}</div>}
+				{s.editorOverlay}
+			</div>
+			{/* terminal */}
+			<div style={{position: 'absolute', left: treeW, width: w - treeW - agentW, bottom: 0, height: term, borderTop: `1px solid ${C.line}`, background: '#FAFBFA', padding: '10px 18px', boxSizing: 'border-box', fontFamily: mono, fontSize: 13, color: C.body}}>
+				<div style={{fontSize: 12, color: C.muted, fontFamily: inter, marginBottom: 6}}>Terminal 1</div>
+				{(s.terminal ?? ['$']).map((l, i) => (
+					<div key={i} style={{color: l.startsWith('✓') ? C.green : C.body}}>{l}</div>
+				))}
+			</div>
+			{/* Claude Code agent panel */}
+			<div style={{position: 'absolute', right: 0, top: head, width: agentW, bottom: 0, borderLeft: `1px solid ${C.line}`, background: '#FBFAF8', boxShadow: (s.agentGlow ?? 0) > 0 ? `inset 0 0 0 ${2 * (s.agentGlow ?? 0)}px ${C.claude}` : undefined}}>
+				<div style={{height: 46, display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', borderBottom: `1px solid ${C.line}`}}>
+					<ClaudeMark size={20} />
+					<span style={{fontSize: 15, fontWeight: 700, color: C.ink}}>Claude Code</span>
+					<span style={{marginLeft: 'auto', fontSize: 12, color: C.muted}}>Context: 8 files</span>
+				</div>
+				{s.agent ?? (
+					<div style={{textAlign: 'center', marginTop: 80, fontSize: 15, color: C.body, padding: '0 30px', lineHeight: 1.5}}>
+						<div style={{display: 'flex', justifyContent: 'center', marginBottom: 14}}>
+							<ClaudeMark size={38} />
+						</div>
+						Use Claude Code to complete this assessment
+					</div>
+				)}
+				<div style={{position: 'absolute', left: 16, right: 16, bottom: 16, height: 64, borderRadius: 10, boxShadow: `0 0 0 1px ${C.line}`, background: '#fff', padding: '12px 14px', boxSizing: 'border-box', fontFamily: mono, fontSize: 13, color: C.muted}}>
+					<span style={{color: C.claude}}>›</span> Describe what to build…
+				</div>
+			</div>
+			{/* red toast (real copy) */}
+			{(s.toast ?? 0) > 0.01 ? (
+				<div style={{position: 'absolute', left: treeW + (w - treeW - agentW) / 2 - 170, top: head + 22, width: 340, height: 52, borderRadius: 10, background: '#fff', boxShadow: `0 0 0 1px #F3C1BC, 0 18px 40px -16px rgba(217,48,37,0.45)`, display: 'flex', alignItems: 'center', gap: 12, padding: '0 18px', fontSize: 16, fontWeight: 600, color: C.red, zIndex: 8, opacity: Math.min(1, (s.toast ?? 0) * 1.5), transform: `translateY(${(1 - (s.toast ?? 0)) * -24}px) scale(${mix(0.85, 1, s.toast ?? 0)})`}}>
+					<span style={{width: 22, height: 22, borderRadius: '50%', background: C.red, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800}}>!</span>
+					External paste not allowed
+				</div>
+			) : null}
+		</div>
+	);
+};
+
+/** Claude Code mark — a simple coral spark (generic, not the official logo artwork). */
+export const ClaudeMark: React.FC<{size: number}> = ({size}) => (
+	<svg width={size} height={size} viewBox="-10 -10 20 20">
+		{Array.from({length: 8}, (_, k) => (
+			<rect key={k} x={-1.1} y={-9} width={2.2} height={7} rx={1.1} fill="#D97757" transform={`rotate(${k * 45})`} />
+		))}
+	</svg>
+);

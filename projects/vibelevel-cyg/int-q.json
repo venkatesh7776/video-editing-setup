@@ -1,0 +1,8 @@
+[
+ {
+  "id": "q1",
+  "text": "Can you explain how your strength indicator decides between weak, medium, strong and very strong?",
+  "stability": 0.55,
+  "model": "eleven_multilingual_v2"
+ }
+]

@@ -1,0 +1,10 @@
+[
+ {"id": "s1", "text": "Today, we're putting VibeLevel Screening to the test. A candidate receives an assessment link and decides to take a few shortcuts. Let's see how far he gets.", "stability": 0.5},
+ {"id": "s2", "text": "He has a 60-minute assessment. He signs in, reads the problem and is ready to begin. But first, what shortcuts does he have in mind?", "stability": 0.5},
+ {"id": "s3", "text": "First, he takes a screenshot of the problem and sends it to an external AI tool. But the moment he leaves the assessment tab, VibeLevel catches it and shows a warning.", "stability": 0.5},
+ {"id": "s4", "text": "Now he copies the AI's answer and tries to paste it into the workspace. VibeLevel blocks the external paste immediately.", "stability": 0.5},
+ {"id": "s5", "text": "Fine. There's an AI assistant built into the assessment, so he lets it build everything: files, code and tests. A few edits, a test run, and he submits.", "stability": 0.5},
+ {"id": "s6", "text": "The assessment is submitted, but one thing is left: the interview. Can he explain what the AI built?", "stability": 0.5},
+ {"id": "s7", "text": "Every attempt leaves evidence. Recruiters see tab-switch warnings, blocked pastes, recorded prompts, file edits, test runs, external assistance indicators, responsible AI checks and Video Q&A insights — one clear picture of the candidate.", "stability": 0.5},
+ {"id": "s8", "text": "With VibeLevel Screening, it's not just about what candidates submit. It's about how they get there.", "stability": 0.5}
+]

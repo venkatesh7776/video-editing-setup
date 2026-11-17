@@ -1,0 +1,4 @@
+[
+ {"id": "a1", "text": "Uh… so it basically checks the password, and… yeah, it shows a colour, depending on how strong it is.", "stability": 0.35},
+ {"id": "a2", "text": "The last character type can't be switched off. At least one stays selected, so the password always has valid characters.", "stability": 0.5}
+]

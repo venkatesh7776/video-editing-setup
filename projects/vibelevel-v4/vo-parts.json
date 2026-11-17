@@ -1,0 +1,47 @@
+[
+ {
+  "id": "s1",
+  "text": "From 1,000 applicants to the top 5 AI builders. How do you identify the people who can actually deliver?",
+  "stability": 0.5
+ },
+ {
+  "id": "s2",
+  "text": "AI helps candidates build faster and deliver impressive results. But where's the evidence behind their work \u2014 their AI conversations, code changes, decisions, and actual contributions?",
+  "stability": 0.5
+ },
+ {
+  "id": "s3",
+  "text": "Meet VibeLevel Screening, an AI-era assessment platform that helps recruiters evaluate technical and non-technical talent with evidence-backed insights into how candidates think, work with AI, and contribute.",
+  "stability": 0.5
+ },
+ {
+  "id": "s4",
+  "text": "Recruiters get a detailed candidate report with performance scores, AI collaboration insights, Code Review, Video Q&A, and an Interview Guide to explore candidate strengths and gaps.",
+  "stability": 0.5
+ },
+ {
+  "id": "s6",
+  "text": "With Review Session, recruiters can explore AI conversations, code changes, and outputs. See what candidates did well, where they fell short, and the evidence behind every finding.",
+  "stability": 0.5
+ },
+ {
+  "id": "s5",
+  "text": "Candidates tackle realistic, role-specific challenges in a dedicated workspace, with AI coding tools like Claude Code and GitHub Copilot integrated for technical assessments.",
+  "stability": 0.5
+ },
+ {
+  "id": "s7",
+  "text": "VibeLevel evaluates candidates across four dimensions: Core Skills, Working with AI, Ownership, and Human Contribution. Understand what they bring beyond the final output.",
+  "stability": 0.5
+ },
+ {
+  "id": "s8",
+  "text": "Go deeper with a short AI-led interview that reveals their thinking and reasoning.",
+  "stability": 0.5
+ },
+ {
+  "id": "s9",
+  "text": "VibeLevel Screening. Understand the person behind the performance.",
+  "stability": 0.5
+ }
+]

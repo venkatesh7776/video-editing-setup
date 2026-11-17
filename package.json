@@ -1,0 +1,38 @@
+{
+  "name": "video-editor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local AI-assisted video editing: FFmpeg + Whisper + Remotion, driven by Claude Code",
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-setup.mjs",
+    "probe": "node scripts/analyze/probe.mjs",
+    "transcribe": "node scripts/transcribe/run.mjs",
+    "silence": "node scripts/analyze/silence.mjs",
+    "fillers": "node scripts/analyze/fillers.mjs",
+    "props": "node scripts/pipeline.mjs --stop-after props",
+    "preview": "node scripts/pipeline.mjs --stop-after props && remotion studio src/index.ts --props=work/props.json",
+    "render": "node scripts/pipeline.mjs --skip-transcribe",
+    "edit": "node scripts/pipeline.mjs",
+    "still": "node scripts/pipeline.mjs --skip-transcribe --still",
+    "smoke-test": "node scripts/smoke-test.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/transitions": "4.0.532",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.532"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.4",
+    "@types/react": "19.3.0",
+    "playwright": "1.63.0",
+    "typescript": "7.0.2"
+  }
+}

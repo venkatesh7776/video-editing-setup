@@ -1,0 +1,38 @@
+[
+ {
+  "id": "h0",
+  "text": "Hi, I'm Venkatesh, founder of THE Digital Moments. Let me show you how Moments QR works.",
+  "model": "eleven_multilingual_v2",
+  "stability": 0.55
+ },
+ {
+  "id": "h1",
+  "text": "Step one. Create a folder for each event, and generate its QR code. You get a beautiful card in your wedding's theme, ready to download.",
+  "model": "eleven_multilingual_v2",
+  "stability": 0.55
+ },
+ {
+  "id": "h2",
+  "text": "Step two. Place the card at your venue. Guests simply scan it with their phone camera. No app. No login.",
+  "model": "eleven_multilingual_v2",
+  "stability": 0.55
+ },
+ {
+  "id": "h3",
+  "text": "Step three. Guests upload their photos, and can add a note, a reaction, or even a voice message.",
+  "model": "eleven_multilingual_v2",
+  "stability": 0.55
+ },
+ {
+  "id": "h4",
+  "text": "Step four. It all lands on your wedding website, which comes included, with your names, your story, and every event. Open Wedding Memories, and every photo is right there, in an album for each event.",
+  "model": "eleven_multilingual_v2",
+  "stability": 0.55
+ },
+ {
+  "id": "h5",
+  "text": "Moments QR. A QR code for every event, plus your own wedding website. Message us \"MEMORIES\" on WhatsApp to get started.",
+  "model": "eleven_multilingual_v2",
+  "stability": 0.55
+ }
+]

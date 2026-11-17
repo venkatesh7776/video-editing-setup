@@ -1,0 +1,47 @@
+{
+  "engine": "sarvam",
+  "model": "bulbul:v3",
+  "speaker": "shubh",
+  "pace": 0.9,
+  "scenes": [
+    {
+      "id": "l1-hook",
+      "text": "Still sending wedding invites as a PDF on WhatsApp?",
+      "spoken": "Still sending wedding invites... as a PDF... on WhatsApp?",
+      "pace": 0.88,
+      "note": "curious/FOMO read; post-processed (EQ, compression, light echo) — see projects/wedding-reel/NOTES.md"
+    },
+    {
+      "id": "l2-reveal",
+      "text": "What if your guests got this instead?"
+    },
+    {
+      "id": "l3-story",
+      "text": "A wedding website that tells your love story,"
+    },
+    {
+      "id": "l4-countdown",
+      "text": "counts down to the big day,"
+    },
+    {
+      "id": "l5-ceremonies",
+      "text": "walks guests through every ceremony,"
+    },
+    {
+      "id": "l6-rsvp",
+      "text": "and collects every RSVP in one tap."
+    },
+    {
+      "id": "l7-any",
+      "text": "Any theme. Any tradition. Any love story."
+    },
+    {
+      "id": "l8-detail",
+      "text": "Every detail, designed around the two of you."
+    },
+    {
+      "id": "l9-cta",
+      "text": "Want one for your wedding? DM me WEDDING, and let's build yours."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "input": "input/raw-video.mp4",
+  "output": "output/test-video.mp4",
+  "format": "9:16",
+  "fps": null,
+  "fit": "auto",
+  "focus": { "x": 0.5, "y": 0.5 },
+  "trim": { "start": 0, "end": null },
+  "cuts": [],
+  "zooms": [],
+  "captions": {
+    "enabled": true,
+    "position": "bottom",
+    "maxWordsPerPage": 4,
+    "highlightActiveWord": true,
+    "highlightColor": "#FFD60A",
+    "keywords": [],
+    "keywordColor": "#34D399",
+    "uppercase": false
+  },
+  "logo": null,
+  "title": null,
+  "music": null,
+  "audio": { "normalize": false, "volume": 1 },
+  "whisper": { "model": "small.en", "language": "en" },
+  "render": { "codec": "h264", "crf": 18, "audioBitrate": "192k" }
+}

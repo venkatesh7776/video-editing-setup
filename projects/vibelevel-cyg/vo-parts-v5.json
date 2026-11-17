@@ -1,0 +1,92 @@
+[
+ {
+  "id": "o1",
+  "text": "Cheating in hiring assessments has evolved.",
+  "stability": 0.5
+ },
+ {
+  "id": "o2",
+  "text": "But honest candidates shouldn't face lockdowns.",
+  "stability": 0.5
+ },
+ {
+  "id": "o3",
+  "text": "VibeLevel advanced detection prioritizes candidate experience and checks the work, not where they look.",
+  "stability": 0.5
+ },
+ {
+  "id": "s1a",
+  "text": "Today, we're putting VibeLevel Screening to the test,",
+  "stability": 0.5
+ },
+ {
+  "id": "s1b",
+  "text": "by performing these cheats: tab switching, outside AI tools, a proxy test-taker, a second device, browser agents and prompt extensions.",
+  "stability": 0.5
+ },
+ {
+  "id": "s1c",
+  "text": "A candidate receives an assessment link and decides to take a few shortcuts. Let's see how far he gets.",
+  "stability": 0.5
+ },
+ {
+  "id": "s2",
+  "text": "He has a 60-minute assessment. He signs in, reads the problem and is ready to begin. But first, what shortcuts does he have in mind?",
+  "stability": 0.5
+ },
+ {
+  "id": "s3",
+  "text": "First, he takes a screenshot of the problem and sends it to an external AI tool. But the moment he leaves the assessment tab, VibeLevel catches it and shows a warning.",
+  "stability": 0.5
+ },
+ {
+  "id": "s4",
+  "text": "Now he copies the AI's answer and tries to paste it into the workspace. VibeLevel blocks the external paste immediately.",
+  "stability": 0.5
+ },
+ {
+  "id": "s5",
+  "text": "Next, he steps away and lets a friend take over the assessment. Nothing stops the session. But VibeLevel monitors it live, capturing random camera snapshots of the person at the laptop. When the report is generated, the switch is flagged.",
+  "stability": 0.5
+ },
+ {
+  "id": "s6",
+  "text": "The assessment is submitted, but one thing is left: the interview. Can he explain what was built?",
+  "stability": 0.5
+ },
+ {
+  "id": "s6b",
+  "text": "And VibeLevel watches for more: a second device, browser agents, and prompt extensions.",
+  "stability": 0.5
+ },
+ {
+  "id": "s7",
+  "text": "Every attempt leaves evidence. Recruiters see tab-switch warnings, blocked pastes, proxy flags, second-device and browser-agent alerts, prompt extensions and Video Q&A insights \u2014 one clear picture of the candidate.",
+  "stability": 0.5
+ },
+ {
+  "id": "s8",
+  "text": "Cheating keeps evolving. Not past our detection. VibeLevel Screening: it's not just about what candidates submit, it's about how they get there.",
+  "stability": 0.5
+ },
+ {
+  "id": "c1",
+  "text": "Better candidate experience.",
+  "stability": 0.5
+ },
+ {
+  "id": "c2",
+  "text": "Advanced detection.",
+  "stability": 0.5
+ },
+ {
+  "id": "c3",
+  "text": "Without the high price tag.",
+  "stability": 0.5
+ },
+ {
+  "id": "c4",
+  "text": "Screen smarter with VibeLevel.",
+  "stability": 0.5
+ }
+]

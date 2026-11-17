@@ -1,0 +1,1123 @@
+// VibeLevel Screening — "Can You Get Away With It?" v2 (16:9; designed 1920×1080, rendered ×2 → 3840×2160).
+// v2 (user review 2026-11-12): logo-led kinetic opening, light mint/white pixels on the brand gradient, Clash Display,
+// VibeLevel logo top-left throughout (not on chapter cards), front-angle MacBook Omni plates, screenshot (not copy) in
+// Attempt 01, Claude Code panel in the IDE, per-attempt signals, one interview question, animated end logos.
+import React from 'react';
+import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame, type CalculateMetadataFunction} from 'remotion';
+import {BACK, Browser, C, clash, CODE, CODE_LEN, Code, CornerMark, Cursor, EXPO, GRAD, hash, IN_OUT, inter, keys, Keycaps, mix, NovaMark, PixelField, PixelWipe, ProblemPage, prog, ScreeningIcon, SignalChip, type SignalKey, Star, Wordmark, Workspace, type WS} from './ui';
+
+const FPS = 30;
+type Word = {w: string; s: number; e: number};
+type Part = {id: string; start: number; end: number; words: Word[]};
+export type CygProps = {parts: Part[]; cards: number[]; card: number; duration: number; segments: {s: number; e: number; int?: boolean}[]; musicOffset: number};
+export const calculateCygMetadata: CalculateMetadataFunction<CygProps> = ({props}) => ({fps: FPS, durationInFrames: Math.max(1, Math.ceil(props.duration * FPS))});
+
+const clean = (w: string) => w.toLowerCase().replace(/[^a-z0-9&']/g, '');
+const useCues = (parts: Part[]) => {
+	const P = (id: string) => parts.find((p) => p.id === id) ?? {id, start: 0, end: 0, words: []};
+	const W = (id: string, w: string, k = 0) => {
+		const ws = P(id).words;
+		const exact = ws.filter((x) => clean(x.w) === w);
+		const hits = exact.length > k ? exact : ws.filter((x) => clean(x.w).startsWith(w));
+		return (hits[k] ?? hits[hits.length - 1] ?? {s: P(id).start}).s;
+	};
+	return {P, W};
+};
+type Q = ReturnType<typeof useCues>;
+type SP = {t: number; q: Q; a: number; b: number};
+
+// ── shared ─────────────────────────────────────────────────────────────────────────────────────────
+
+/** Brand backdrop: mint→cream gradient, optional pixel-mountain art, soft white/mint pixels at the edges. */
+const Bg: React.FC<{t: number; mountain?: number; pixels?: number; horizon?: number}> = ({t, mountain = 0, pixels = 0.9, horizon = 0}) => (
+	<AbsoluteFill style={{background: GRAD}}>
+		{mountain > 0 ? (
+			<AbsoluteFill style={{opacity: mountain}}>
+				<Img src={staticFile('cyg/img/mountain.png')} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.04 + t * 0.002})`}} />
+			</AbsoluteFill>
+		) : null}
+		<PixelField t={t} strength={pixels} horizon={horizon} />
+	</AbsoluteFill>
+);
+
+const Plate: React.FC<{t: number; src: string; a: number; b: number; z?: [number, number]; origin?: string}> = ({t, src, a, b, z = [1.02, 1.08], origin = '50% 50%'}) => (
+	<Sequence from={Math.round(a * FPS)} durationInFrames={Math.max(1, Math.round((b - a) * FPS))} layout="none">
+		<AbsoluteFill style={{transform: `scale(${mix(z[0], z[1], prog(t, a, b - a, Easing.linear))})`, transformOrigin: origin}}>
+			<OffthreadVideo src={staticFile(`cyg/omni/${src}`)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+		</AbsoluteFill>
+	</Sequence>
+);
+
+/** Full-frame cinematic insert that opens as a rounded window and closes back. */
+const Insert: React.FC<{t: number; src: string; a: number; d: number; origin?: string}> = ({t, src, a, d, origin}) => {
+	if (t < a - 0.05 || t > a + d + 0.05) return null;
+	const i = prog(t, a, 0.45, EXPO);
+	const o = prog(t, a + d - 0.35, 0.35, IN_OUT);
+	const inset = mix(14, 0, i) + o * 10;
+	return (
+		<AbsoluteFill style={{clipPath: `inset(${inset}% ${inset * 1.2}% round ${mix(40, 0, i) + o * 40}px)`, opacity: 1 - o}}>
+			<Plate t={t} src={src} a={a} b={a + d} z={[1.1, 1.02]} origin={origin} />
+		</AbsoluteFill>
+	);
+};
+
+/** Kinetic headline: each word rises out of a mask with a blur that clears, on its spoken time. */
+const Kinetic: React.FC<{t: number; text: string; times: number[]; size: number; color?: string; accent?: string[]; weight?: number; style?: React.CSSProperties; out?: number}> = ({t, text, times, size, color = C.ink, accent = [], weight = 600, style, out = 1e9}) => {
+	const o = prog(t, out, 0.5, IN_OUT);
+	return (
+		<div style={{fontFamily: clash, fontWeight: weight, fontSize: size, lineHeight: 1.08, letterSpacing: weight >= 600 ? '-0.04em' : '-0.025em', color, textAlign: 'center', ...style}}>
+			{text.split(' ').map((w, i, arr) => {
+				const p = prog(t, (times[i] ?? times[times.length - 1]) - 0.1, 0.8, EXPO);
+				return (
+					<span key={i} style={{display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom', marginRight: i < arr.length - 1 ? '0.22em' : 0, paddingBottom: '0.1em'}}>
+						<span style={{display: 'inline-block', transform: `translateY(${(1 - p) * 100 - o * 40}%)`, opacity: Math.pow(p, 1.4) * (1 - o), color: accent.includes(w) ? C.green : undefined}}>{w}</span>
+					</span>
+				);
+			})}
+		</div>
+	);
+};
+
+const Cam: React.FC<{x?: number; y?: number; z?: number; rx?: number; ry?: number; children: React.ReactNode}> = ({x = 0, y = 0, z = 1, rx = 0, ry = 0, children}) => (
+	<AbsoluteFill style={{perspective: 2600, perspectiveOrigin: '50% 45%'}}>
+		<AbsoluteFill style={{transform: `translate(${x}px, ${y}px) scale(${z}) rotateX(${rx}deg) rotateY(${ry}deg)`, transformStyle: 'preserve-3d'}}>{children}</AbsoluteFill>
+	</AbsoluteFill>
+);
+
+/** Browser entrance: rises from below, tilted, and settles flat. */
+const rise = (t: number, a: number) => {
+	const p = prog(t, a, 0.9, EXPO);
+	return {y: (1 - p) * 220, z: mix(0.86, 1, p), rx: (1 - p) * 16, o: Math.min(1, p * 1.8)};
+};
+
+const BX = 70;
+const BY = 112;
+const BW = 1540;
+const BH = 900;
+const CT = BY + 94;
+const VL_URL = 'vibelevel.ai/assess/password-generator';
+const NOVA_URL = 'nova.ai/chat';
+const VL_TAB = {title: 'VibeLevel · Password Generator', icon: 'vl' as const};
+const NOVA_TAB = {title: 'Nova — Ask anything', icon: 'nova' as const};
+const timerAt = (t: number, t0: number) => {
+	const left = Math.max(0, 3600 - Math.max(0, (t - t0) * 9));
+	return `${String(Math.floor(left / 60)).padStart(2, '0')}:${String(Math.floor(left % 60)).padStart(2, '0')}`;
+};
+
+/** Smooth tab switch: the outgoing page slides/blurs out, the incoming one slides in. p 0→1. */
+const Switch: React.FC<{p: number; from: React.ReactNode; to: React.ReactNode; dir?: 1 | -1}> = ({p, from, to, dir = 1}) => (
+	<>
+		{p < 1 ? <div style={{position: 'absolute', inset: 0, opacity: 1 - p, transform: `translateX(${-p * 60 * dir}px) scale(${1 - p * 0.02})`, filter: `blur(${p * 6}px)`}}>{from}</div> : null}
+		{p > 0 ? <div style={{position: 'absolute', inset: 0, opacity: p, transform: `translateX(${(1 - p) * 60 * dir}px)`, filter: `blur(${(1 - p) * 6}px)`}}>{to}</div> : null}
+	</>
+);
+
+/** Pixel-accented glass pill. */
+const Pill: React.FC<{text: string; p: number; x: number; y: number; green?: boolean; float?: number}> = ({text, p, x, y, green, float = 0}) =>
+	p > 0.01 ? (
+		<div style={{position: 'absolute', left: x, top: y + Math.sin(float) * 6, display: 'flex', alignItems: 'center', gap: 14, padding: '14px 24px 14px 14px', borderRadius: 18, background: 'rgba(255,255,255,0.86)', backdropFilter: 'blur(14px)', boxShadow: '0 0 0 1px rgba(255,255,255,0.9), 0 24px 44px -22px rgba(14,21,18,0.45)', fontFamily: inter, fontWeight: 600, fontSize: 22, color: green ? C.green : C.ink, opacity: Math.min(1, p * 1.5), transform: `translateX(${(1 - p) * -40}px)`}}>
+			<div style={{width: 34, height: 34, borderRadius: 9, background: '#E9F7EF', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2.5, padding: 6, boxSizing: 'border-box'}}>
+				{Array.from({length: 9}, (_, i) => (
+					<div key={i} style={{borderRadius: 1.5, background: hash(i, text.length) > 0.55 ? C.greenHi : '#BDEBD0'}} />
+				))}
+			</div>
+			{text}
+		</div>
+	) : null;
+
+// ── chapter cards ──────────────────────────────────────────────────────────────────────────────────
+
+const DIG: Record<string, string[]> = {
+	'0': ['01110', '10001', '10001', '10001', '10001', '10001', '01110'],
+	'1': ['00100', '01100', '00100', '00100', '00100', '00100', '01110'],
+	'2': ['01110', '10001', '00001', '00010', '00100', '01000', '11111'],
+	'3': ['11110', '00001', '00001', '01110', '00001', '00001', '11110'],
+	'4': ['00010', '00110', '01010', '10010', '11111', '00010', '00010'],
+};
+const SUB = 24;
+const BIT = SUB * 2;
+const numeralCells = (n: string) => {
+	const cells: {x: number; y: number; col: number; row: number; r: number}[] = [];
+	[...n].forEach((d, di) =>
+		DIG[d].forEach((rowS, row) =>
+			[...rowS].forEach((b, col) => {
+				if (b !== '1') return;
+				for (let sy = 0; sy < 2; sy++)
+					for (let sx = 0; sx < 2; sx++) {
+						const gc = di * 6 + col;
+						cells.push({x: gc * BIT + sx * SUB, y: row * BIT + sy * SUB, col: gc * 2 + sx, row: row * 2 + sy, r: hash(gc * 2 + sx, row * 2 + sy, 7)});
+					}
+			}),
+		),
+	);
+	return cells;
+};
+const NUM_W = 11 * BIT;
+const NUM_H = 7 * BIT;
+const CARDS = [
+	{n: '01', head: 'The External AI Shortcut', sub: 'Can an external AI tool do the work for him?', next: 'Attempt 02'},
+	{n: '02', head: 'The Copy-Paste Trick', sub: 'Can he bring an external solution into the assessment?', next: 'Attempt 03'},
+	{n: '03', head: 'Let AI Do the Heavy Lifting', sub: 'What happens when AI is already part of the workspace?', next: 'Attempt 04'},
+	{n: '04', head: 'The Final Bluff', sub: 'Can he explain the work he just submitted?', next: 'The report'},
+];
+
+const ChapterCard: React.FC<{t: number; a: number; d: number; i: number}> = ({t, a, d, i}) => {
+	const u = t - a;
+	if (u < -0.05 || u > d + 0.05) return null;
+	const cd = CARDS[i];
+	const cells = numeralCells(cd.n);
+	const ex = prog(u, d - 0.45, 0.45, IN_OUT);
+	const X0 = 960 - NUM_W / 2;
+	const Y0 = 226;
+	const textIn = (k: number) => prog(u, 0.45 + k * 0.14, 0.8, EXPO);
+	return (
+		<AbsoluteFill>
+			<Bg t={t} mountain={0.5} pixels={0.5} />
+			<AbsoluteFill style={{background: 'rgba(250,252,249,0.38)'}} />
+			<AbsoluteFill style={{transform: `scale(${mix(1.03, 1, prog(u, 0, d, Easing.linear))})`}}>
+				<div style={{position: 'absolute', left: 0, right: 0, top: 104, display: 'flex', justifyContent: 'center', gap: 8, opacity: prog(u, 0.1, 0.4) * (1 - ex)}}>
+					{[0, 1, 2, 3].map((k) => (
+						<div key={k} style={{width: 20, height: 20, borderRadius: 4, background: k < i ? '#8FD9AE' : k === i ? C.green : 'rgba(255,255,255,0.7)', boxShadow: k > i ? `inset 0 0 0 1.5px ${C.line}` : undefined}} />
+					))}
+				</div>
+				<div style={{position: 'absolute', left: 0, right: 0, top: 150, textAlign: 'center', fontFamily: inter, fontWeight: 700, fontSize: 20, letterSpacing: '0.42em', paddingLeft: '0.42em', color: C.body, opacity: prog(u, 0.15, 0.5) * (1 - ex)}}>ATTEMPT</div>
+				{Array.from({length: 70}, (_, k) => {
+					const p = prog(u, 0.05 + hash(k, 4) * 0.5, 0.9, EXPO);
+					if (p <= 0 || p >= 1) return null;
+					const tx = X0 + hash(k, 5) * NUM_W;
+					const ty = Y0 + hash(k, 6) * NUM_H;
+					const ang = hash(k, 7) * Math.PI * 2;
+					const d = (1 - p) * (220 + hash(k, 8) * 380);
+					const sz = 6 + hash(k, 9) * 10;
+					return <div key={`sp${k}`} style={{position: 'absolute', left: tx + Math.cos(ang) * d, top: ty + Math.sin(ang) * d, width: sz, height: sz, borderRadius: 2, background: k % 3 ? '#9FE2BC' : C.greenHi, opacity: Math.sin(Math.PI * p) * 0.9}} />;
+				})}
+				{cells.map((c, k) => {
+					let x = X0 + c.x;
+					let y = Y0 + c.y;
+					let o = 1;
+					let sx = 1;
+					let bg = c.r > 0.8 ? '#25D07A' : C.green;
+					if (i === 0) {
+						const p = prog(u, (1 - c.col / 22) * 0.3 + c.r * 0.1, 0.6, EXPO);
+						x += (1 - p) * (1200 + c.r * 400);
+						sx = 1 + (1 - p) * 4;
+						o = p > 0 ? 1 : 0;
+						x -= ex * (1900 + c.r * 300);
+						sx += ex * 5;
+					} else if (i === 1) {
+						const p = prog(u, (1 - c.row / 14) * 0.26 + c.r * 0.12, 0.65, BACK);
+						y -= (1 - p) * (900 + c.r * 260);
+						o = p > 0 ? 1 : 0;
+						x = mix(x, 960 - SUB / 2, ex);
+						y = mix(y, 600, ex);
+						o *= 1 - prog(ex, 0.7, 0.3);
+					} else if (i === 2) {
+						const lock = (c.row / 14) * 0.6 + 0.1;
+						o = u > lock - 0.22 + c.r * 0.1 ? 1 : 0;
+						if (o && u < lock) bg = hash(c.col, c.row, Math.floor(u * 24)) > 0.5 ? '#7FE0A8' : '#DDF5E7';
+						x += ex * (1500 + c.r * 700) * (0.4 + c.row / 14);
+					} else {
+						const p = prog(u, (c.col / 22) * 0.32, 0.8, IN_OUT);
+						y = mix(Y0 + NUM_H / 2 + Math.sin(c.col * 0.55 + u * 9) * 100 * Math.sin((c.col / 22) * Math.PI), y, p);
+						o = prog(u, (c.col / 22) * 0.15, 0.2);
+						y = mix(y, Y0 + NUM_H / 2 + Math.sin(c.col * 0.6 + u * 14) * 40, ex);
+					}
+					if (o <= 0) return null;
+					return <div key={k} style={{position: 'absolute', left: x, top: y, width: SUB - 4, height: SUB - 4, borderRadius: 3, background: bg, opacity: o, transform: `scaleX(${sx})`, transformOrigin: 'left center', boxShadow: '0 8px 16px -10px rgba(11,122,62,0.5)'}} />;
+				})}
+				<div style={{position: 'absolute', left: 0, right: 0, top: Y0 + NUM_H + 50, textAlign: 'center', opacity: 1 - ex, transform: `translateY(${-ex * 20}px)`}}>
+					<div style={{overflow: 'hidden', paddingBottom: 8}}>
+						<div style={{fontFamily: clash, fontWeight: 700, fontSize: 80, letterSpacing: '-0.04em', color: C.ink, transform: `translateY(${(1 - textIn(0)) * 105}%)`, opacity: Math.pow(textIn(0), 1.4)}}>{cd.head}</div>
+					</div>
+					<div style={{marginTop: 8, fontFamily: inter, fontWeight: 500, fontSize: 30, color: C.body, opacity: textIn(1), transform: `translateY(${(1 - textIn(1)) * 16}px)`}}>{cd.sub}</div>
+				</div>
+				<div style={{position: 'absolute', right: -50, top: Y0 + NUM_H / 2 - 40, fontFamily: clash, fontWeight: 700, fontSize: 60, letterSpacing: '-0.04em', color: C.ink, opacity: 0.14 * prog(u, 0.4, 0.6) * (1 - ex), filter: 'blur(5px)', whiteSpace: 'nowrap'}}>{cd.next}</div>
+			</AbsoluteFill>
+		</AbsoluteFill>
+	);
+};
+
+const Tray: React.FC<{t: number; items: [SignalKey, number][]}> = ({t, items}) => {
+	const shown = items.filter(([, at]) => t >= at);
+	if (!shown.length) return null;
+	return (
+		<div style={{position: 'absolute', left: 1640, top: 150, width: 250}}>
+			<div style={{fontFamily: inter, fontWeight: 700, fontSize: 13, letterSpacing: '0.22em', color: C.muted, marginBottom: 12}}>SIGNALS</div>
+			<div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+				{shown.map(([k, at]) => (
+					<SignalChip key={k} k={k} p={prog(t, at, 0.6, BACK)} />
+				))}
+			</div>
+		</div>
+	);
+};
+
+// ── S1 · opening ──────────────────────────────────────────────────────────────────────────────────
+
+/** VibeLevel logo reveal; docks into the top-left corner when the VO starts (then the CornerMark takes over). */
+const LogoIntro: React.FC<{t: number; dockAt: number}> = ({t, dockAt}) => {
+	const star = prog(t, 0.15, 1.0, EXPO);
+	const dock = prog(t, dockAt, 0.9, IN_OUT);
+	if (dock >= 1) return null;
+	const letters = 'VibeLevel'.split('');
+	const H = mix(132, 46, dock);
+	const fs = mix(112, 38, dock);
+	const gap = mix(30, 12, dock);
+	const w = H * 0.93 + gap + fs * 4.55;
+	const left = mix(960 - w / 2, 52, dock);
+	const top = mix(540 - H / 2, 32, dock);
+	return (
+		<>
+			{Array.from({length: 46}, (_, k) => {
+				const p = prog(t, 0.05 + hash(k, 3) * 0.3, 0.9, EXPO);
+				if (p >= 1 || dock > 0) return null;
+				const ang = hash(k, 1) * Math.PI * 2;
+				const d = (1 - p) * (260 + hash(k, 2) * 500);
+				return <div key={k} style={{position: 'absolute', left: left + H * 0.46 + Math.cos(ang) * d, top: top + H / 2 + Math.sin(ang) * d, width: 14, height: 14, borderRadius: 3, background: k % 3 ? '#BFEBD2' : C.greenHi, opacity: p * (1 - p) * 3}} />;
+			})}
+			<div style={{position: 'absolute', left, top, display: 'flex', alignItems: 'center', gap}}>
+				<div style={{transform: `scale(${mix(0.3, 1, star)}) rotate(${(1 - star) * -150}deg)`, filter: `blur(${(1 - star) * 12}px)`, opacity: Math.min(1, star * 1.6)}}>
+					<Star h={H} />
+				</div>
+				<div style={{display: 'flex', overflow: 'hidden', paddingBottom: fs * 0.12}}>
+					{letters.map((ch, i) => {
+						const p = prog(t, 0.6 + i * 0.045, 0.7, EXPO);
+						return (
+							<span key={i} style={{display: 'inline-block', fontFamily: 'Outfit', fontWeight: 700, fontSize: fs, letterSpacing: '-0.02em', color: C.wordmark, lineHeight: 1, transform: `translateY(${(1 - p) * 100}%)`, opacity: Math.pow(p, 1.4)}}>
+								{ch}
+							</span>
+						);
+					})}
+				</div>
+			</div>
+		</>
+	);
+};
+
+const Title: React.FC<SP> = ({t, a, b}) => {
+	const lines = [['CAN', 'YOU', 'GET'], ['AWAY', 'WITH', 'IT?']];
+	const step = 0.2;
+	return (
+		<AbsoluteFill style={{transform: `scale(${mix(1, 1.05, prog(t, a, b - a, Easing.linear))})`, opacity: 1 - prog(t, b - 0.45, 0.4, IN_OUT)}}>
+			<div style={{position: 'absolute', left: 0, right: 0, top: 300}}>
+				{lines.map((ln, li) => (
+					<div key={li} style={{display: 'flex', justifyContent: 'center', gap: 34}}>
+						{ln.map((w, wi) => {
+							const p = prog(t, a + (li * 3 + wi) * step, 0.9, EXPO);
+							return (
+								<span key={w} style={{display: 'inline-block', overflow: 'hidden', paddingBottom: 10}}>
+									<span style={{display: 'inline-block', fontFamily: clash, fontWeight: 700, fontSize: 190, lineHeight: 1, letterSpacing: '-0.02em', color: w === 'IT?' ? C.green : C.ink, transform: `translateY(${(1 - p) * 100}%)`, opacity: Math.pow(p, 1.4)}}>
+										{w}
+									</span>
+								</span>
+							);
+						})}
+					</div>
+				))}
+			</div>
+			{Array.from({length: 36}, (_, k) => {
+				const p = prog(t, a + 5 * step + 0.2, 1.3, EXPO);
+				if (p <= 0) return null;
+				const ang = hash(k, 1) * Math.PI * 2;
+				const d = 90 + hash(k, 2) * 280;
+				return <div key={k} style={{position: 'absolute', left: 1330 + Math.cos(ang) * d * p, top: 600 + Math.sin(ang) * d * p, width: 13, height: 13, borderRadius: 3, background: k % 3 ? '#BFEBD2' : C.greenHi, opacity: (1 - p) * 0.9}} />;
+			})}
+		</AbsoluteFill>
+	);
+};
+
+const S1Opening: React.FC<SP> = ({t, q, a, b}) => {
+	const W = (w: string, k = 0) => q.W('s1', w, k);
+	const tToday = W('today');
+	const tScr = W('screening');
+	const tCand = W('candidate') - 0.35;
+	const tDec = W('decides') - 0.15;
+	const tLet = W('let') - 0.2;
+	const tEnd = q.P('s1').end;
+	const invite = prog(t, tCand, 0.9, EXPO);
+	const tClick = W('link') + 0.15;
+	const click = prog(t, tClick, 0.45, Easing.linear);
+	return (
+		<AbsoluteFill>
+			<Bg t={t} pixels={0.9} />
+			<LogoIntro t={t} dockAt={tToday - 0.7} />
+			{t < tCand + 0.6 ? (
+				<AbsoluteFill style={{opacity: 1 - prog(t, tCand, 0.5, IN_OUT)}}>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 300}}>
+						<Kinetic t={t} text="Today, we're putting" times={[tToday, W('we'), W('putting')]} size={84} color={C.body} weight={400} />
+					</div>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 432, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 28}}>
+						<div style={{opacity: prog(t, W('vibe') - 0.15, 0.4), transform: `scale(${mix(0.6, 1, prog(t, W('vibe') - 0.15, 0.8, BACK))})`}}>
+							<ScreeningIcon size={116} p={prog(t, W('vibe') - 0.1, 1.0, EXPO)} spin={(1 - prog(t, W('vibe'), 1.2, EXPO)) * -120} />
+						</div>
+						<Kinetic t={t} text="VibeLevel Screening" times={[W('vibe'), tScr]} size={104} color={C.wordmark} weight={700} />
+					</div>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 600}}>
+						<Kinetic t={t} text="to the test." times={[W('to'), W('the'), W('test')]} size={84} accent={['test.']} weight={700} />
+					</div>
+				</AbsoluteFill>
+			) : null}
+			{t > tCand - 0.1 && t < tDec + 0.6 ? (
+				<AbsoluteFill style={{opacity: 1 - prog(t, tDec - 0.2, 0.4, IN_OUT)}}>
+					<Cam rx={mix(14, 3, invite)} ry={mix(-12, -4, invite)} z={mix(0.88, 1, invite) + click * 0.04} y={mix(90, 0, invite)}>
+						<div style={{position: 'absolute', left: 580, top: 300, width: 760, height: 360, borderRadius: 26, background: '#fff', boxShadow: '0 0 0 1px rgba(14,21,18,0.06), 0 60px 110px -50px rgba(14,21,18,0.5)', padding: 34, boxSizing: 'border-box', opacity: Math.min(1, invite * 1.5), fontFamily: inter}}>
+							<div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+								<ScreeningIcon size={42} />
+								<div>
+									<div style={{fontSize: 14, fontWeight: 700, color: C.ink}}>VibeLevel Screening</div>
+									<div style={{fontSize: 13, color: C.muted}}>Assessment invitation · just now</div>
+								</div>
+							</div>
+							<div style={{marginTop: 24, fontFamily: clash, fontSize: 36, fontWeight: 700, letterSpacing: '-0.03em', color: C.ink}}>You're invited: Password Generator</div>
+							<div style={{display: 'flex', gap: 10, marginTop: 16}}>
+								{['JavaScript', 'Beginner', '⏱ 60 min', '✦ AI Assistant Included'].map((x) => (
+									<span key={x} style={{padding: '7px 12px', borderRadius: 8, background: x.includes('AI') ? C.mint : C.soft, color: x.includes('AI') ? C.green : C.body, fontSize: 14, fontWeight: 600}}>{x}</span>
+								))}
+							</div>
+							<div style={{position: 'absolute', left: 34, right: 34, bottom: 34, height: 58, borderRadius: 13, background: C.green, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18, transform: `scale(${1 - 0.04 * Math.sin(Math.PI * click)})`, boxShadow: click > 0 && click < 1 ? `0 0 0 ${10 * (1 - click)}px rgba(11,122,62,0.18)` : undefined}}>Open assessment →</div>
+						</div>
+						{/* card 580→1340 × 300→660; button centre ≈ (960, 597) */}
+						<Cursor x={mix(1260, 958, prog(t, tClick - 0.75, 0.7, IN_OUT))} y={mix(840, 594, prog(t, tClick - 0.75, 0.7, IN_OUT))} click={click} o={prog(t, tClick - 0.85, 0.25)} />
+					</Cam>
+				</AbsoluteFill>
+			) : null}
+			{/* C · …and decides to take a few shortcuts. (the invite has fully left first) */}
+			{t > tDec + 0.2 && t < tLet + 0.5 ? (
+				<AbsoluteFill style={{opacity: 1 - prog(t, tLet - 0.25, 0.4, IN_OUT)}}>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 380}}>
+						<Kinetic t={t} text="…and decides to take a few" times={[tDec + 0.3, W('decides'), W('to', 1), W('take'), W('a', 1), W('few')]} size={70} color={C.body} weight={400} />
+						<Kinetic t={t} text="shortcuts." times={[W('shortcuts')]} size={160} accent={['shortcuts.']} weight={700} />
+					</div>
+				</AbsoluteFill>
+			) : null}
+			{/* D · Let's see how far he gets. */}
+			{t > tLet - 0.1 ? (
+				<AbsoluteFill style={{opacity: 1 - prog(t, b - 0.2, 0.3, IN_OUT)}}>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 330}}>
+						<Kinetic t={t} text="Let's see" times={[W('let'), W('see')]} size={150} weight={700} />
+						<Kinetic t={t} text="how far he gets." times={[W('how'), W('far'), W('he'), W('gets')]} size={150} accent={['gets.']} weight={700} />
+					</div>
+				</AbsoluteFill>
+			) : null}
+		</AbsoluteFill>
+	);
+};
+
+// ── S2 · the assessment ────────────────────────────────────────────────────────────────────────────
+
+const InviteCard: React.FC<{press: number}> = ({press}) => (
+	<AbsoluteFill style={{background: '#F7F8F7', fontFamily: inter}}>
+		<div style={{position: 'absolute', left: BW / 2 - 380, top: 90, width: 760, height: 400, borderRadius: 16, background: '#fff', boxShadow: `0 0 0 1px ${C.line}`, padding: 32, boxSizing: 'border-box'}}>
+			<span style={{padding: '4px 10px', borderRadius: 6, background: C.soft, fontSize: 12, fontWeight: 700, color: C.body}}>{'</>'} JAVASCRIPT</span>
+			<div style={{display: 'flex', alignItems: 'center', gap: 12, marginTop: 18}}>
+				<Star h={26} />
+				<span style={{fontSize: 16, fontWeight: 700}}>VibeLevel AI</span>
+				<span style={{fontSize: 26, fontWeight: 700, color: C.ink, marginLeft: 10}}>Password Generator</span>
+			</div>
+			<div style={{display: 'flex', gap: 8, marginTop: 14}}>
+				<span style={{padding: '4px 10px', borderRadius: 6, background: C.mint, color: C.green, fontSize: 12, fontWeight: 700}}>BEGINNER</span>
+				<span style={{padding: '4px 10px', borderRadius: 6, background: C.soft, fontSize: 12}}>FrontEnd</span>
+			</div>
+			<div style={{marginTop: 18, fontSize: 15, color: C.body}}>Build a password generator with configurable options and a visual strength indicator.</div>
+			<div style={{display: 'flex', gap: 16, marginTop: 12, fontSize: 13, color: C.body}}>
+				<span>⏱ 60 min</span>
+				<span style={{color: C.green}}>✦ AI Assistant Included</span>
+			</div>
+			<div style={{position: 'absolute', left: 32, right: 32, bottom: 32, height: 52, borderRadius: 10, background: C.green, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 16, transform: `scale(${1 - 0.04 * Math.sin(Math.PI * press)})`}}>Sign In to Start</div>
+		</div>
+	</AbsoluteFill>
+);
+
+const S2Assessment: React.FC<SP> = ({t, q, a, b}) => {
+	const W = (w: string, k = 0) => q.W('s2', w, k);
+	const tSigns = W('signs') - 0.25;
+	const reveal = prog(t, tSigns, 0.6, Easing.bezier(0.7, 0, 0.2, 1));
+	const tSign = tSigns + 0.6;
+	const tReads = Math.max(W('reads') - 0.1, tSign + 0.45);
+	const tReady = W('ready');
+	const tStart = tReady + 0.15;
+	const ws = prog(t, tStart + 0.2, 0.9);
+	// the laptop lid in the plate (≈ x 300–1060, y 650–1080) opens into the UI
+	const clipL = mix(300, 0, reveal);
+	const clipT = mix(650, 0, reveal);
+	const clipR = mix(1920 - 1060, 0, reveal);
+	const clipB = 0;
+	return (
+		<AbsoluteFill>
+			{t < tSigns + 1.0 ? (
+				<AbsoluteFill style={{transform: `scale(${1 + reveal * 0.3})`, transformOrigin: '35% 80%', filter: `blur(${reveal * 6}px)`}}>
+					<Plate t={t} src="k2.mp4" a={a - 0.2} b={tSigns + 1.0} z={[1.0, 1.05]} origin="55% 40%" />
+					<AbsoluteFill style={{background: 'linear-gradient(90deg, rgba(246,248,245,0.55) 0%, rgba(246,248,245,0) 40%)'}} />
+					<Pill text="60 minutes" p={prog(t, W('60') - 0.1, 0.8, EXPO) * (1 - reveal)} x={120} y={200} float={t * 1.1} />
+					<Pill text="AI Assistant Included" green p={prog(t, W('minute') + 0.05, 0.8, EXPO) * (1 - reveal)} x={120} y={300} float={t * 1.1 + 1} />
+					<Pill text="Password Generator · JavaScript" p={prog(t, W('assessment') - 0.1, 0.8, EXPO) * (1 - reveal)} x={120} y={400} float={t * 1.1 + 2} />
+					<Pill text="Candidate · Ryan" p={prog(t, a + 0.5, 0.8, EXPO) * (1 - reveal)} x={1440} y={150} float={t * 1.1 + 3} />
+				</AbsoluteFill>
+			) : null}
+			{reveal > 0 ? (
+				<AbsoluteFill style={{clipPath: `inset(${clipT}px ${clipR}px ${clipB}px ${clipL}px round ${mix(18, 0, reveal)}px)`}}>
+					<Bg t={t} pixels={0.6} />
+					<Cam rx={keys(t, [[tSigns + 0.4, 8], [tSigns + 1.6, 3], [tReads, 2], [tStart + 0.6, 0], [b, 0]])} ry={keys(t, [[tSigns + 0.4, -8], [tSigns + 1.6, -3], [tStart + 0.6, 0], [b, 2]])} z={keys(t, [[tSigns + 0.4, 0.9], [tSigns + 1.6, 0.97], [tStart + 0.6, 1], [b, 1.03]])}>
+						<Browser w={BW} h={BH} tabs={[VL_TAB]} active={0} url={VL_URL} style={{left: BX, top: BY}}>
+							<Switch
+								p={prog(t, tReads, 0.5, IN_OUT)}
+								from={<InviteCard press={prog(t, tSign, 0.35, Easing.linear)} />}
+								to={
+									<Switch
+										p={prog(t, tStart + 0.25, 0.5, IN_OUT)}
+										from={<ProblemPage w={BW} h={BH - 94} scroll={keys(t, [[tReads + 0.3, 0], [tReady, 260]])} start={prog(t, tStart, 0.35, Easing.linear)} />}
+										to={
+											<div style={{position: 'absolute', inset: 0, transform: `scale(${mix(0.97, 1, ws)})`}}>
+												<Workspace w={BW} h={BH - 94} s={{timer: timerAt(t, tStart + 0.6), file: 'style.css'}} />
+											</div>
+										}
+									/>
+								}
+							/>
+						</Browser>
+						{/* Sign In button centre: x = BX + BW/2, y = CT + 90 + 400 − 32 − 26 */}
+						{t < tReads + 0.2 ? <Cursor x={mix(1250, BX + BW / 2 + 10, prog(t, tSign - 0.45, 0.4, IN_OUT))} y={mix(980, CT + 426, prog(t, tSign - 0.45, 0.4, IN_OUT))} click={prog(t, tSign, 0.45, Easing.linear)} o={prog(t, tSign - 0.5, 0.15) * (1 - prog(t, tReads + 0.1, 0.2))} /> : null}
+						{/* Start Coding: right of the Problem header */}
+						{t > tReady - 0.7 && t < tStart + 0.6 ? <Cursor x={mix(1200, BX + BW - 110, prog(t, tReady - 0.6, 0.6, IN_OUT))} y={mix(700, CT + 24, prog(t, tReady - 0.6, 0.6, IN_OUT))} click={prog(t, tStart, 0.45, Easing.linear)} o={1 - prog(t, tStart + 0.35, 0.2)} /> : null}
+					</Cam>
+				</AbsoluteFill>
+			) : null}
+		</AbsoluteFill>
+	);
+};
+
+// ── S3 · Attempt 01: screenshot → external AI → tab-switch warning ─────────────────────────────────
+
+const NovaPage: React.FC<{attach: number; sent: number; answer: number; sel?: number}> = ({attach, sent, answer, sel = 0}) => (
+	<AbsoluteFill style={{background: '#FBFBFE', fontFamily: inter}}>
+		<div style={{position: 'absolute', left: 0, right: 0, top: 40, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, opacity: 1 - sent}}>
+			<NovaMark size={40} />
+			<span style={{fontSize: 38, fontWeight: 800, letterSpacing: '-0.03em', color: '#1B1B3A'}}>Nova</span>
+		</div>
+		<div style={{position: 'absolute', left: 230, right: 230, top: mix(150, 30, sent)}}>
+			{sent > 0 ? (
+				<div style={{marginLeft: 'auto', width: 460, padding: 14, borderRadius: 16, background: '#EEF0FF', opacity: sent}}>
+					<div style={{height: 150, borderRadius: 10, overflow: 'hidden', position: 'relative', background: '#fff', boxShadow: '0 0 0 1px #DADDF0'}}>
+						<div style={{position: 'absolute', left: 0, top: 0, width: BW, height: BH - 94, transform: 'scale(0.29)', transformOrigin: 'left top'}}>
+							<ProblemPage w={BW} h={BH - 94} />
+						</div>
+					</div>
+					<div style={{marginTop: 10, fontSize: 15, fontWeight: 600, color: '#1B1B3A'}}>Solve this. Give me the full code.</div>
+				</div>
+			) : null}
+			{answer > 0 ? (
+				<div style={{marginTop: 20, display: 'flex', gap: 14}}>
+					<NovaMark size={28} />
+					<div style={{flex: 1, padding: '16px 20px', borderRadius: 16, background: '#fff', boxShadow: '0 0 0 1px #E6E8F2'}}>
+						<div style={{fontSize: 15, color: '#1B1B3A', marginBottom: 10}}>Here's a complete solution:</div>
+						<div style={{position: 'relative', padding: 14, borderRadius: 12, background: '#F6F7FB'}}>
+							<Code lines={CODE} shown={answer * CODE_LEN} size={13} lh={1.5} gutter={false} />
+							{sel > 0 ? <div style={{position: 'absolute', left: 8, top: 8, width: 'calc(100% - 16px)', height: `${94 * sel}%`, background: 'rgba(47,107,255,0.16)', borderRadius: 6}} /> : null}
+						</div>
+					</div>
+				</div>
+			) : null}
+		</div>
+		<div style={{position: 'absolute', left: 230, right: 230, bottom: 30, height: 66, borderRadius: 18, background: '#fff', boxShadow: '0 0 0 1px #E6E8F2, 0 14px 30px -18px rgba(27,27,58,0.3)', display: 'flex', alignItems: 'center', gap: 12, padding: '0 22px', fontSize: 16, color: '#9A9DB5'}}>
+			{attach > 0 && sent < 1 ? <div style={{display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 10, background: '#EEF0FF', color: '#1B1B3A', fontSize: 14, fontWeight: 600, opacity: attach, transform: `scale(${mix(0.6, 1, attach)})`}}>🖼 screenshot.png</div> : null}
+			{attach > 0.5 && sent < 1 ? <span style={{color: '#1B1B3A'}}>Solve this. Give me the full code.</span> : 'Ask anything'}
+			<div style={{marginLeft: 'auto', width: 38, height: 38, borderRadius: 12, background: 'linear-gradient(135deg,#7B61FF,#2F6BFF)'}} />
+		</div>
+	</AbsoluteFill>
+);
+
+const S3Attempt1: React.FC<SP> = ({t, q, a}) => {
+	const W = (w: string, k = 0) => q.W('s3', w, k);
+	const tTakes = W('takes') - 0.1;
+	const tShot = W('screenshot');
+	const tSends = W('sends') - 0.05;
+	const tExt = W('external');
+	const tMoment = W('moment');
+	const tCatch = W('catches');
+	const tWarn = W('warning');
+	const r = rise(t, a);
+	const drag = prog(t, tShot + 0.25, 0.75, IN_OUT);
+	const flash = t > tShot + 1.05 && t < tShot + 1.3 ? 1 - (t - tShot - 1.05) / 0.25 : 0;
+	const thumb = prog(t, tShot + 1.1, 0.6, EXPO);
+	const tab = prog(t, tSends, 0.5, EXPO);
+	const toNova = prog(t, tSends + 0.25, 0.55, IN_OUT);
+	const attach = prog(t, tSends + 0.6, 0.45, BACK);
+	const sent = prog(t, tSends + 1.3, 0.5, EXPO);
+	const answer = prog(t, tExt + 0.3, 2.6, Easing.linear);
+	const back = prog(t, tCatch + 0.15, 0.5, IN_OUT);
+	const banner = prog(t, tWarn - 0.3, 0.6, EXPO);
+	const camPush = prog(t, tWarn - 0.35, 0.9, IN_OUT);
+	const tabFocus = prog(t, tMoment - 0.3, 0.7, IN_OUT) * (1 - prog(t, tCatch + 0.1, 0.6, IN_OUT));
+	const R = {x: BX + 330, y: CT + 60, w: 920, h: 600};
+	const onNova = toNova > 0.5 && back < 0.5;
+	return (
+		<AbsoluteFill>
+			<Bg t={t} pixels={0.6} />
+			<Cam x={tabFocus * 1000 + camPush * 260} y={r.y + tabFocus * 560 + camPush * 300} z={r.z + tabFocus * 0.5 + camPush * 0.26} rx={r.rx}>
+				<div style={{position: 'absolute', inset: 0, opacity: r.o}}>
+					<Browser w={BW} h={BH} tabs={[VL_TAB, ...(tab > 0 ? [{...NOVA_TAB, grow: tab}] : [])]} active={onNova ? 1 : 0} url={onNova ? NOVA_URL : VL_URL} hlTab={tabFocus} style={{left: BX, top: BY}}>
+						<Switch
+							p={back}
+							dir={-1}
+							from={<Switch p={toNova} from={<ProblemPage w={BW} h={BH - 94} />} to={<NovaPage attach={attach} sent={sent} answer={answer} />} />}
+							to={<Workspace w={BW} h={BH - 94} s={{timer: timerAt(t, a - 40), file: 'style.css', banner}} />}
+						/>
+					</Browser>
+					{drag > 0 && toNova < 0.3 ? (
+						<>
+							<div style={{position: 'absolute', left: R.x, top: R.y, width: R.w * drag, height: R.h * drag, background: 'rgba(47,107,255,0.08)', boxShadow: 'inset 0 0 0 2px rgba(47,107,255,0.9)', opacity: 1 - thumb}} />
+							<div style={{position: 'absolute', left: R.x + R.w * drag - 14, top: R.y + R.h * drag - 1, width: 28, height: 2, background: '#111', opacity: 1 - thumb}} />
+							<div style={{position: 'absolute', left: R.x + R.w * drag - 1, top: R.y + R.h * drag - 14, width: 2, height: 28, background: '#111', opacity: 1 - thumb}} />
+						</>
+					) : null}
+					{thumb > 0 && attach < 1 ? (
+						<div style={{position: 'absolute', left: mix(BX + BW - 330, BX + 300, toNova), top: mix(BY + BH - 230, BY + BH - 70, toNova), width: mix(280, 80, toNova), height: mix(182, 52, toNova), borderRadius: 10, overflow: 'hidden', background: '#fff', boxShadow: '0 0 0 3px #fff, 0 24px 44px -16px rgba(14,21,18,0.55)', opacity: Math.min(1, thumb * 1.5) * (1 - prog(attach, 0.5, 0.5)), transform: `scale(${mix(0.4, 1, thumb)})`}}>
+							<div style={{width: BW, height: BH - 94, transform: `scale(${mix(280, 80, toNova) / BW})`, transformOrigin: 'left top'}}>
+								<ProblemPage w={BW} h={BH - 94} />
+							</div>
+						</div>
+					) : null}
+					<Cursor x={keys(t, [[tMoment - 0.2, 900], [tCatch - 0.15, BX + 150]])} y={keys(t, [[tMoment - 0.2, 700], [tCatch - 0.15, BY + 30]])} o={prog(t, tMoment - 0.3, 0.3) * (1 - prog(t, tCatch + 0.5, 0.3))} click={prog(t, tCatch, 0.45, Easing.linear)} />
+				</div>
+			</Cam>
+			{flash > 0 ? <AbsoluteFill style={{background: `rgba(255,255,255,${0.8 * flash})`}} /> : null}
+			<Keycaps keys={['⌘', '⇧', '4']} p={prog(t, tTakes, 0.4, BACK) * (1 - prog(t, tShot + 0.3, 0.3))} x={790} y={880} />
+			{tabFocus > 0.3 ? (
+				<div style={{position: 'absolute', left: 0, right: 0, top: 930, display: 'flex', justifyContent: 'center', opacity: tabFocus}}>
+					<div style={{padding: '14px 26px', borderRadius: 999, background: C.amberBg, boxShadow: `0 0 0 1.5px ${C.amberLine}, 0 20px 40px -20px rgba(183,121,31,0.5)`, fontFamily: inter, fontWeight: 700, fontSize: 26, color: C.amber}}>He left the assessment tab.</div>
+				</div>
+			) : null}
+			<Insert t={t} src="k3.mp4" a={tTakes + 0.05} d={1.15} origin="50% 60%" />
+			<Insert t={t} src="k4.mp4" a={tWarn + 1.0} d={1.5} origin="50% 40%" />
+		</AbsoluteFill>
+	);
+};
+
+// ── S4 · Attempt 02: paste blocked ────────────────────────────────────────────────────────────────
+
+const ClipCard: React.FC<{style?: React.CSSProperties}> = ({style}) => (
+	<div style={{position: 'absolute', width: 420, padding: 20, borderRadius: 18, background: '#fff', boxShadow: `0 0 0 1px ${C.line}, 0 40px 70px -30px rgba(14,21,18,0.55)`, fontFamily: inter, ...style}}>
+		<div style={{display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 700, color: C.ink}}>
+			<span style={{width: 26, height: 26, borderRadius: 7, background: '#EEF3FF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center'}}>📋</span>
+			Generated answer · copied
+		</div>
+		<div style={{marginTop: 12}}>
+			<Code lines={CODE.slice(0, 9)} shown={600} size={11} lh={1.5} gutter={false} />
+		</div>
+	</div>
+);
+
+const Shatter: React.FC<{t: number; at: number; x: number; y: number; w: number; h: number}> = ({t, at, x, y, w, h}) => {
+	const p = prog(t, at, 1.1, Easing.bezier(0.2, 0.7, 0.3, 1));
+	if (p <= 0 || p >= 1) return null;
+	return (
+		<>
+			{Array.from({length: 80}, (_, k) => {
+				const cx = x + hash(k, 1) * w;
+				const cy = y + hash(k, 2) * h;
+				const ang = Math.atan2(cy - (y + h / 2), cx - (x + w / 2)) + (hash(k, 3) - 0.5);
+				const d = (60 + hash(k, 4) * 260) * p;
+				return <div key={k} style={{position: 'absolute', left: cx + Math.cos(ang) * d, top: cy + Math.sin(ang) * d + p * p * 150, width: 9 + hash(k, 5) * 9, height: 9 + hash(k, 5) * 9, borderRadius: 2, background: k % 3 ? '#F28B82' : C.red, opacity: (1 - p) * 0.9, transform: `rotate(${hash(k, 6) * 180 * p}deg)`}} />;
+			})}
+		</>
+	);
+};
+
+const S4Attempt2: React.FC<SP> = ({t, q, a}) => {
+	const W = (w: string, k = 0) => q.W('s4', w, k);
+	const tCopies = W('copies');
+	const tAnswer = W('answer');
+	const tPaste = W('paste') - 0.1;
+	const tWork = W('workspace');
+	const tBlocks = W('blocks');
+	const r = rise(t, a);
+	const sel = prog(t, tCopies + 0.05, 0.6, IN_OUT);
+	const lift = prog(t, tAnswer, 0.7, EXPO);
+	const toVL = prog(t, tPaste, 0.55, IN_OUT);
+	const fly = prog(t, tPaste + 0.1, 0.8, Easing.bezier(0.5, 0, 0.75, 0.2));
+	const hit = tWork + 0.3;
+	const toast = prog(t, hit + 0.05, 0.6, BACK);
+	const shake = t > hit && t < hit + 0.3 ? Math.sin((t - hit) * 90) * 8 * (1 - (t - hit) / 0.3) : 0;
+	const push = prog(t, tBlocks, 1.1, IN_OUT);
+	return (
+		<AbsoluteFill>
+			<Bg t={t} pixels={0.6} />
+			<Cam x={shake + push * 260} y={r.y + push * 320} z={r.z + push * 0.26} rx={r.rx}>
+				<div style={{position: 'absolute', inset: 0, opacity: r.o}}>
+					<Browser w={BW} h={BH} tabs={[VL_TAB, NOVA_TAB]} active={toVL > 0.5 ? 0 : 1} url={toVL > 0.5 ? VL_URL : NOVA_URL} style={{left: BX, top: BY}}>
+						<Switch p={toVL} dir={-1} from={<NovaPage attach={1} sent={1} answer={1} sel={sel} />} to={<Workspace w={BW} h={BH - 94} s={{timer: timerAt(t, a - 60), file: 'generator.js', toast}} />} />
+					</Browser>
+					{lift > 0 && fly < 1 ? <ClipCard style={{left: mix(BX + 520, BX + 470, fly), top: mix(BY + 300 - lift * 90, CT + 140, fly), transform: `perspective(1000px) rotateX(${mix(0, 22, fly)}deg) rotate(${mix(-5, 0, fly)}deg) scale(${mix(1, 0.92, fly)})`, opacity: fly > 0.97 ? 0 : 1}} /> : null}
+					<Shatter t={t} at={hit} x={BX + 470} y={CT + 140} w={420} h={260} />
+				</div>
+			</Cam>
+			<Keycaps keys={['⌘', 'C']} p={prog(t, tCopies + 0.4, 0.4, BACK) * (1 - prog(t, tPaste - 0.2, 0.3))} x={830} y={900} />
+			<Keycaps keys={['⌘', 'V']} p={prog(t, tWork - 0.35, 0.35, BACK) * (1 - prog(t, hit + 0.6, 0.3))} x={830} y={900} />
+			{t > hit ? <AbsoluteFill style={{background: `rgba(217,48,37,${0.1 * (1 - prog(t, hit, 0.5, Easing.linear))})`}} /> : null}
+		</AbsoluteFill>
+	);
+};
+
+// ── S5 · Attempt 03: Claude Code builds it ────────────────────────────────────────────────────────
+
+const S5Attempt3: React.FC<SP> = ({t, q, a}) => {
+	const W = (w: string, k = 0) => q.W('s5', w, k);
+	const tAssist = W('assistant');
+	const tLets = W('lets');
+	const tEvery = W('everything');
+	const tFiles = W('files');
+	const tCode = W('code');
+	const tTests = W('tests');
+	const tEdits = W('edits');
+	const tRun = W('run');
+	const tSubmits = W('submits');
+	const r = rise(t, a + 1.1);
+	const toPanel = prog(t, tAssist - 0.2, 0.9, IN_OUT) * (1 - prog(t, tCode - 0.2, 0.9, IN_OUT));
+	const PROMPT = 'Build the complete password generator: length slider, character toggles, strength meter, copy button and tests.';
+	const typed = prog(t, tLets - 0.1, Math.max(0.5, tEvery - tLets + 0.2), Easing.linear);
+	const sent = t >= tEvery + 0.25;
+	const steps: [number, string][] = [
+		[tFiles, 'Created generator.js'],
+		[tFiles + 0.3, 'Created index.html'],
+		[tCode, 'Wrote password + strength logic'],
+		[tTests, 'Added generator.test.js'],
+	];
+	const code = prog(t, tCode - 0.1, 2.4, Easing.linear) * CODE_LEN;
+	const edit = prog(t, tEdits - 0.2, 0.4);
+	const run = prog(t, tRun - 0.1, 0.4, Easing.linear);
+	const term = t < tRun ? ['$'] : ['$ npm test', ...(t > tRun + 0.35 ? ['✓ generates passwords of the chosen length'] : []), ...(t > tRun + 0.6 ? ['✓ keeps one character type selected'] : []), ...(t > tRun + 0.85 ? ['✓ rates strength: weak → very strong'] : [])];
+	const submitted = prog(t, tSubmits + 0.2, 0.6, BACK);
+	const agent = (
+		<div style={{position: 'absolute', left: 0, right: 0, top: 46, padding: 16, fontFamily: inter}}>
+			<div style={{display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 999, background: C.mint, color: C.green, fontSize: 13, fontWeight: 700, opacity: prog(t, tAssist, 0.5)}}>✓ Built into the assessment · allowed</div>
+			{sent ? <div style={{marginTop: 16, marginLeft: 30, padding: '12px 14px', borderRadius: 12, background: '#F3EFEA', fontSize: 14, lineHeight: 1.5, color: C.ink}}>{PROMPT}</div> : null}
+			<div style={{marginTop: 12}}>
+				{steps.map(([at, s]) =>
+					t >= at ? (
+						<div key={s} style={{display: 'flex', alignItems: 'center', gap: 10, fontFamily: 'JetBrains Mono', fontSize: 13, color: C.body, marginTop: 9, opacity: prog(t, at, 0.3)}}>
+							<span style={{color: C.claude}}>●</span>
+							{s}
+						</div>
+					) : null,
+				)}
+			</div>
+			{!sent && typed > 0 ? (
+				<div style={{position: 'absolute', left: 16, right: 16, top: 640, height: 64, borderRadius: 10, boxShadow: `0 0 0 2px ${C.claude}`, background: '#fff', padding: '10px 12px', boxSizing: 'border-box', fontSize: 13.5, color: C.ink, zIndex: 3}}>
+					<span style={{color: C.claude}}>› </span>
+					{PROMPT.slice(0, Math.round(typed * PROMPT.length))}
+					<span style={{display: 'inline-block', width: 2, height: 15, background: C.claude, verticalAlign: 'middle'}} />
+				</div>
+			) : null}
+		</div>
+	);
+	const s: WS = {
+		timer: timerAt(t, a - 80),
+		file: t > tFiles ? 'generator.js' : 'style.css',
+		code: t > tCode - 0.1 ? code : 0,
+		codeHl: edit > 0 ? [[17, 17, `rgba(0,201,95,${0.2 * edit})`]] : undefined,
+		agent: t > tAssist - 0.3 ? agent : undefined,
+		agentGlow: prog(t, tAssist, 0.5) * (1 - prog(t, tCode + 0.5, 0.6)),
+		terminal: term,
+		press: {run, submit: prog(t, tSubmits - 0.1, 0.4, Easing.linear)},
+		treeHl: steps.filter(([at]) => t > at).map(([, x]) => x.split(' ')[1]),
+	};
+	const rail: [number, string][] = [
+		[tEvery + 0.25, 'Prompt'],
+		[tFiles, 'Files created'],
+		[tCode, 'Code written'],
+		[tEdits, 'File edit'],
+		[tEdits + 0.35, 'In-app copy/paste'],
+		[tRun, 'Test run'],
+		[tSubmits, 'Submitted'],
+	];
+	return (
+		<AbsoluteFill>
+			<Bg t={t} pixels={0.6} />
+			<Cam z={r.z * 0.9 + toPanel * 0.42} x={-toPanel * 470} y={r.y - 34 + toPanel * 60} rx={r.rx} ry={toPanel * -5}>
+				<div style={{position: 'absolute', inset: 0, opacity: r.o}}>
+					<Browser w={BW} h={BH} tabs={[VL_TAB]} active={0} url={VL_URL} style={{left: BX, top: BY}}>
+						<Workspace w={BW} h={BH - 94} s={s} />
+					</Browser>
+					{edit > 0 && t < tRun ? <Cursor x={BX + 540} y={CT + 56 + 18 + 30 + 17 * 23.8} click={prog(t, tEdits, 0.45, Easing.linear)} /> : null}
+					{t > tSubmits ? (
+						<div style={{position: 'absolute', left: BX + BW / 2 - 200, top: BY + 380, width: 400, padding: '22px 26px', borderRadius: 18, background: '#fff', boxShadow: `0 0 0 1px ${C.line}, 0 40px 80px -30px rgba(14,21,18,0.5)`, fontFamily: inter, textAlign: 'center', opacity: Math.min(1, submitted * 1.5), transform: `scale(${mix(0.85, 1, submitted)})`}}>
+							<div style={{width: 54, height: 54, borderRadius: '50%', background: C.mint, color: C.green, fontSize: 30, fontWeight: 800, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>✓</div>
+							<div style={{marginTop: 12, fontFamily: clash, fontSize: 26, fontWeight: 700, letterSpacing: '-0.025em', color: C.ink}}>Assessment submitted</div>
+						</div>
+					) : null}
+				</div>
+			</Cam>
+			<Insert t={t} src="k5.mp4" a={a + 0.05} d={Math.max(1.2, tAssist - a - 0.3)} origin="50% 45%" />
+			<div style={{position: 'absolute', left: 120, right: 330, top: 1004, height: 60, opacity: prog(t, tEvery, 0.5)}}>
+				<div style={{position: 'absolute', left: 0, right: 0, top: 9, height: 2, background: 'rgba(14,21,18,0.1)'}} />
+				<div style={{position: 'absolute', left: 0, top: 9, height: 2, width: `${100 * prog(t, tEvery, Math.max(1, tSubmits - tEvery + 0.4), Easing.linear)}%`, background: C.green}} />
+				{rail.map(([at, label], i) => {
+					const p = prog(t, at, 0.45, BACK);
+					return (
+						<div key={label} style={{position: 'absolute', left: `${(i / (rail.length - 1)) * 100}%`, top: 0, transform: 'translateX(-50%)', textAlign: 'center', opacity: Math.min(1, p * 2)}}>
+							<div style={{width: 20, height: 20, borderRadius: 4, background: C.green, margin: '0 auto', transform: `scale(${mix(0.3, 1, p)})`}} />
+							<div style={{marginTop: 8, fontFamily: inter, fontSize: 14, fontWeight: 600, color: C.ink, whiteSpace: 'nowrap'}}>{label}</div>
+						</div>
+					);
+				})}
+			</div>
+		</AbsoluteFill>
+	);
+};
+
+// ── S6 · Attempt 04: one question ─────────────────────────────────────────────────────────────────
+
+const S6Attempt4: React.FC<SP> = ({t, q, a}) => {
+	const W = (w: string, k = 0) => q.W('s6', w, k);
+	const tSub = W('submitted');
+	const tInt = W('interview');
+	const tCan = W('can');
+	const q1 = q.P('q1');
+	const a1 = q.P('a1');
+	const ui = prog(t, q1.start - 0.9, 0.9, EXPO);
+	const qText = 'Can you explain how your strength indicator decides between weak, medium, strong and very strong?';
+	const qShown = prog(t, q1.start, q1.end - q1.start, Easing.linear);
+	const amp = t >= q1.start && t <= q1.end ? 1 : 0.12;
+	const ansWords = a1.words.filter((w) => t >= w.s).map((w) => w.w);
+	const link = prog(t, a1.start + 0.6, 0.8, IN_OUT);
+	const evalP = prog(t, a1.end + 0.15, 0.6, BACK);
+	const intro = 1 - prog(t, q1.start - 1.0, 0.5, IN_OUT);
+	return (
+		<AbsoluteFill>
+			<Bg t={t} pixels={0.7} />
+			{intro > 0 ? (
+				<AbsoluteFill style={{opacity: intro}}>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 250, display: 'flex', justifyContent: 'center', opacity: prog(t, a, 0.5) * (1 - prog(t, W('one') - 0.3, 0.35))}}>
+						<div style={{display: 'flex', alignItems: 'center', gap: 18, padding: '18px 30px', borderRadius: 999, background: '#fff', boxShadow: '0 24px 50px -28px rgba(14,21,18,0.5)', fontFamily: inter, fontSize: 26, fontWeight: 700, color: C.ink, transform: `scale(${mix(0.85, 1, prog(t, tSub - 0.2, 0.6, BACK))})`}}>
+							<span style={{width: 40, height: 40, borderRadius: '50%', background: C.mint, color: C.green, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800}}>✓</span>
+							Assessment submitted
+						</div>
+					</div>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 380}}>
+						<Kinetic t={t} text="One thing left:" times={[W('one'), W('thing'), W('left')]} size={64} color={C.body} weight={400} out={tCan - 0.75} />
+						<Kinetic t={t} text="the interview." times={[W('the', 1), tInt]} size={150} accent={['interview.']} weight={700} out={tCan - 0.75} />
+					</div>
+					<div style={{position: 'absolute', left: 0, right: 0, top: 420}}>
+						<Kinetic t={t} text="Can he explain" times={[Math.max(tCan, tCan - 0.75 + 0.55), W('he'), W('explain')]} size={110} weight={700} />
+						<Kinetic t={t} text="what the AI built?" times={[W('what'), W('the', 2), W('ai'), W('built')]} size={110} accent={['built?']} weight={700} />
+					</div>
+				</AbsoluteFill>
+			) : null}
+			{ui > 0 ? (
+				<Cam z={mix(0.9, 1, ui)} rx={mix(8, 0, ui)} y={(1 - ui) * 120}>
+					<div style={{position: 'absolute', inset: 0, opacity: ui}}>
+						<div style={{position: 'absolute', left: 120, top: 124, display: 'flex', alignItems: 'center', gap: 14, fontFamily: inter}}>
+							<span style={{fontFamily: clash, fontSize: 32, fontWeight: 700, letterSpacing: '-0.03em', color: C.ink}}>Video Q&A</span>
+							<span style={{padding: '5px 12px', borderRadius: 999, background: 'rgba(255,255,255,0.8)', fontSize: 15, fontWeight: 600, color: C.body}}>Password Generator · assessment-specific question</span>
+						</div>
+						<div style={{position: 'absolute', left: 120, top: 190, width: 940, height: 529, borderRadius: 22, overflow: 'hidden', boxShadow: '0 40px 80px -40px rgba(14,21,18,0.6)', background: '#000'}}>
+							{t < a1.start ? <Img src={staticFile('cyg/omni/k6-first.png')} style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : null}
+							{t > a1.start + 7.85 ? <Img src={staticFile('cyg/omni/k6-last.png')} style={{position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover'}} /> : null}
+							<Sequence from={Math.round(a1.start * FPS)} durationInFrames={Math.round(7.9 * FPS)} layout="none">
+								<AbsoluteFill>
+									<OffthreadVideo src={staticFile('cyg/omni/k6.mp4')} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+								</AbsoluteFill>
+							</Sequence>
+							<div style={{position: 'absolute', left: 18, bottom: 18, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 14px', borderRadius: 999, background: 'rgba(255,255,255,0.92)', fontFamily: inter, fontWeight: 600, fontSize: 15, color: C.ink}}>
+								{t > a1.start ? <span style={{width: 9, height: 9, borderRadius: '50%', background: C.red}} /> : null}
+								Ryan · candidate
+							</div>
+						</div>
+						<div style={{position: 'absolute', left: 120, top: 744, width: 940, fontFamily: inter, fontSize: 22, lineHeight: 1.45, color: C.ink}}>
+							{ansWords.length ? (
+								<>
+									<span style={{fontSize: 13, fontWeight: 700, letterSpacing: '0.18em', color: C.muted, display: 'block', marginBottom: 6}}>ANSWER · LIVE TRANSCRIPT</span>“{ansWords.join(' ')}”
+								</>
+							) : null}
+						</div>
+						<div style={{position: 'absolute', left: 1100, top: 190, width: 700, borderRadius: 22, background: '#fff', boxShadow: '0 30px 60px -40px rgba(14,21,18,0.5)', padding: 28, boxSizing: 'border-box', fontFamily: inter}}>
+							<div style={{display: 'flex', alignItems: 'center', gap: 14}}>
+								<ScreeningIcon size={44} spin={t * 30} />
+								<div>
+									<div style={{fontSize: 17, fontWeight: 700, color: C.ink}}>AI Interviewer</div>
+									<div style={{fontSize: 13, color: C.muted}}>Question about his submission</div>
+								</div>
+								<div style={{marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4, height: 40}}>
+									{Array.from({length: 22}, (_, k) => (
+										<div key={k} style={{width: 5, height: 6 + 32 * amp * Math.abs(Math.sin(k * 0.8 + t * 11) * Math.sin(k * 0.31 + t * 3)), borderRadius: 2, background: C.green, opacity: 0.4 + 0.6 * amp}} />
+									))}
+								</div>
+							</div>
+							<div style={{marginTop: 22, fontFamily: clash, fontSize: 30, fontWeight: 600, lineHeight: 1.3, letterSpacing: '-0.02em', color: C.ink, minHeight: 160}}>{qText.slice(0, Math.round(qText.length * Math.min(1, qShown * 1.15)))}</div>
+						</div>
+						<div style={{position: 'absolute', left: 1100, top: 560, width: 700, borderRadius: 18, background: '#fff', boxShadow: '0 20px 40px -30px rgba(14,21,18,0.4)', padding: '16px 20px', boxSizing: 'border-box', opacity: prog(t, a1.start, 0.6)}}>
+							<div style={{fontFamily: inter, fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: C.muted, marginBottom: 10}}>FROM HIS SUBMISSION · generator.js</div>
+							<Code lines={CODE.slice(15, 23)} shown={900} size={13} lh={1.6} gutter={false} hl={[[2, 6, `rgba(217,48,37,${0.1 * link})`]]} />
+						</div>
+						<svg width={1920} height={1080} style={{position: 'absolute', inset: 0, pointerEvents: 'none'}}>
+							{link > 0 ? <path d="M 1060 790 C 1090 790, 1070 700, 1100 690" fill="none" stroke={C.red} strokeWidth={3} strokeDasharray="8 8" strokeDashoffset={-t * 40} opacity={link} /> : null}
+						</svg>
+						{evalP > 0.01 ? (
+							<div style={{position: 'absolute', left: 1100, top: 880, width: 700, padding: '16px 20px', borderRadius: 16, background: C.redBg, boxShadow: `inset 0 0 0 1.5px ${C.red}`, fontFamily: inter, opacity: Math.min(1, evalP * 1.5), transform: `translateY(${(1 - evalP) * 20}px) scale(${mix(0.94, 1, evalP)})`}}>
+								<div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+									<span style={{fontSize: 14, fontWeight: 700, letterSpacing: '0.12em', color: C.body}}>UNDERSTANDING</span>
+									<span style={{padding: '4px 14px', borderRadius: 999, background: C.red, color: '#fff', fontSize: 16, fontWeight: 800}}>Low</span>
+								</div>
+								<div style={{marginTop: 8, fontSize: 15, color: C.ink}}>Answer relevance: low — doesn’t explain how getStrength() scores the password.</div>
+							</div>
+						) : null}
+					</div>
+				</Cam>
+			) : null}
+		</AbsoluteFill>
+	);
+};
+
+// ── S7 · what recruiters see ──────────────────────────────────────────────────────────────────────
+
+const TUNNEL: [string, string][] = [
+	['tab', 'Tab-switch warnings'],
+	['blocked', 'Blocked pastes'],
+	['prompts', 'Recorded prompts'],
+	['file', 'File edits'],
+	['test', 'Test runs'],
+	['external', 'External Assistance Indicators'],
+	['responsible', 'Responsible AI Use'],
+	['video', 'Video Q&A insights'],
+];
+
+const S7Report: React.FC<SP> = ({t, q}) => {
+	const W = (w: string, k = 0) => q.W('s7', w, k);
+	const tSee = W('see');
+	const tSpread = W('one') - 0.35;
+	const head = prog(t, tSee - 0.3, 0.6) * (1 - prog(t, tSpread, 0.4));
+	const rep = prog(t, tSpread + 0.55, 0.9, EXPO);
+	const score = prog(t, tSpread + 0.9, 1.4, Easing.bezier(0.2, 0.7, 0.2, 1));
+	return (
+		<AbsoluteFill>
+			<Bg t={t} pixels={0.7} />
+			<div style={{position: 'absolute', left: 0, right: 0, top: 410}}>
+				<Kinetic t={t} text="Every attempt leaves evidence." times={[W('every'), W('attempt'), W('leaves'), W('evidence')]} size={110} accent={['evidence.']} weight={700} out={tSee - 0.45} />
+			</div>
+			<div style={{position: 'absolute', left: 0, right: 0, top: 200, textAlign: 'center', fontFamily: inter, fontWeight: 700, fontSize: 18, letterSpacing: '0.3em', color: C.muted, opacity: head}}>WHAT RECRUITERS SEE</div>
+			{/* the deck: each card rises from the bottom and settles 18px below the previous one */}
+			{TUNNEL.map(([cue, label], i) => {
+				const at = W(cue);
+				const arrive = prog(t, at - 0.3, 0.75, EXPO);
+				if (arrive <= 0) return null;
+				const sp = prog(t, tSpread + i * 0.04, 0.9, IN_OUT);
+				const stack = {x: 960 - 330, y: 280 + i * 18, w: 660, h: 120};
+				const side = i < 4 ? 0 : 1;
+				const row = i % 4;
+				const corner = {x: side ? 1430 : 70, y: 200 + row * 190, w: 420, h: 150};
+				const x = mix(stack.x, corner.x, sp);
+				const y = mix(stack.y + (1 - arrive) * 900, corner.y, sp);
+				const w = mix(stack.w, corner.w, sp);
+				const h = mix(stack.h, corner.h, sp);
+				return (
+					<div key={label} style={{position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 20, background: '#fff', boxShadow: '0 0 0 1px rgba(14,21,18,0.06), 0 -10px 30px -18px rgba(14,21,18,0.25), 0 26px 50px -30px rgba(14,21,18,0.45)', display: 'flex', alignItems: 'center', gap: 20, padding: '0 26px', boxSizing: 'border-box'}}>
+						<div style={{width: 50, height: 50, flexShrink: 0, borderRadius: 12, background: C.green, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 3, padding: 9, boxSizing: 'border-box'}}>
+							{Array.from({length: 9}, (_, j) => (
+								<div key={j} style={{background: '#fff', opacity: hash(j, i) > 0.4 ? 1 : 0.45, borderRadius: 1}} />
+							))}
+						</div>
+						<div style={{fontFamily: clash, fontSize: mix(30, 25, sp), fontWeight: 600, lineHeight: 1.15, letterSpacing: '-0.02em', color: C.ink}}>{label}</div>
+					</div>
+				);
+			})}
+			{/* the concise report, in the space the cards opened up */}
+			{rep > 0 ? (
+				<div style={{position: 'absolute', left: 560, top: 190, width: 800, borderRadius: 26, background: '#fff', boxShadow: '0 50px 100px -50px rgba(14,21,18,0.5)', padding: '40px 46px', boxSizing: 'border-box', opacity: Math.min(1, rep * 1.5), transform: `translateY(${(1 - rep) * 40}px) scale(${mix(0.94, 1, rep)})`, fontFamily: inter}}>
+					<div style={{display: 'flex', alignItems: 'center', gap: 16}}>
+						<div style={{width: 56, height: 56, borderRadius: '50%', background: C.mint, color: C.green, fontSize: 21, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>RM</div>
+						<div>
+							<div style={{fontFamily: clash, fontSize: 30, fontWeight: 700, letterSpacing: '-0.025em', color: C.ink}}>Ryan M.</div>
+							<div style={{fontSize: 16, color: C.muted, marginTop: 2}}>Password Generator · 60 min</div>
+						</div>
+						<div style={{marginLeft: 'auto', textAlign: 'right'}}>
+							<div style={{fontFamily: clash, fontSize: 56, fontWeight: 800, letterSpacing: '-0.04em', color: C.ink, lineHeight: 1}}>
+								{(5.8 * score).toFixed(1)}
+								<span style={{fontSize: 24, color: C.muted, fontWeight: 500}}> /10</span>
+							</div>
+						</div>
+					</div>
+					<div style={{height: 1, background: C.line, margin: '30px 0 8px'}} />
+					{(
+						[
+							['Tab switches', '1 warning', C.amber],
+							['External paste', '1 blocked', C.red],
+							['AI assistant', 'Recorded · few own edits', C.green],
+							['Video Q&A', 'Low understanding', C.red],
+						] as [string, string, string][]
+					).map(([l, v, col], i) => {
+						const p = prog(t, tSpread + 1.0 + i * 0.18, 0.5);
+						return (
+							<div key={l} style={{display: 'flex', alignItems: 'center', gap: 14, padding: '16px 0', borderBottom: i < 3 ? `1px solid ${C.soft}` : undefined, opacity: p, transform: `translateY(${(1 - p) * 10}px)`}}>
+								<span style={{width: 10, height: 10, borderRadius: 3, background: col}} />
+								<span style={{fontSize: 20, fontWeight: 600, color: C.ink}}>{l}</span>
+								<span style={{marginLeft: 'auto', fontSize: 18, fontWeight: 700, color: col}}>{v}</span>
+							</div>
+						);
+					})}
+				</div>
+			) : null}
+		</AbsoluteFill>
+	);
+};
+
+// ── S8 · closing ──────────────────────────────────────────────────────────────────────────────────
+
+const S8Closing: React.FC<SP> = ({t, q}) => {
+	const W = (w: string, k = 0) => q.W('s8', w, k);
+	const tWith = W('with');
+	const tHow = W('how');
+	const end = q.P('s8').end;
+	const swap = prog(t, tHow - 0.15, 0.7, IN_OUT);
+	const lock = prog(t, tWith - 0.1, 1.2, EXPO);
+	const settle = prog(t, end + 0.1, 1.0, IN_OUT);
+	const powered = prog(t, end + 0.5, 0.8, EXPO);
+	const tag = prog(t, end + 0.9, 0.8, EXPO);
+	const name = 'VibeLevel Screening'.split('');
+	return (
+		<AbsoluteFill>
+			<Bg t={t} pixels={0.8} horizon={0.7 * prog(t, end, 1.2)} />
+			<div style={{position: 'absolute', left: 0, right: 0, top: mix(150, 320, settle), display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+				<div style={{display: 'flex', alignItems: 'center', gap: mix(20, 30, settle), transform: `scale(${mix(0.62, 1, settle)})`}}>
+					<div style={{transform: `scale(${mix(0.5, 1, prog(t, tWith - 0.1, 0.9, BACK))})`, opacity: Math.min(1, lock * 2)}}>
+						<ScreeningIcon size={140} p={lock} spin={(1 - lock) * -140} />
+					</div>
+					<div style={{display: 'flex', overflow: 'hidden', paddingBottom: 12}}>
+						{name.map((ch, i) => {
+							const p = prog(t, tWith + 0.1 + i * 0.03, 0.7, EXPO);
+							return (
+								<span key={i} style={{display: 'inline-block', whiteSpace: 'pre', fontFamily: 'Outfit', fontWeight: 700, fontSize: 96, letterSpacing: '-0.02em', color: C.wordmark, lineHeight: 1, transform: `translateY(${(1 - p) * 100}%)`, opacity: Math.pow(p, 1.4)}}>
+									{ch}
+								</span>
+							);
+						})}
+					</div>
+				</div>
+				<div style={{display: 'flex', alignItems: 'center', gap: 12, marginTop: 34, opacity: powered, transform: `translateY(${(1 - powered) * 14}px)`}}>
+					<span style={{fontFamily: inter, fontSize: 22, color: C.muted, fontWeight: 500}}>Powered by</span>
+					<div style={{transform: `rotate(${(1 - powered) * -90}deg) scale(${mix(0.5, 1, powered)})`}}>
+						<Star h={32} />
+					</div>
+					<Wordmark size={32} />
+				</div>
+				<div style={{marginTop: 70, fontFamily: clash, fontWeight: 700, fontSize: 50, letterSpacing: '-0.035em', color: C.ink, opacity: tag, transform: `translateY(${(1 - tag) * 16}px)`}}>
+					Every action leaves a <span style={{color: C.green}}>signal.</span>
+				</div>
+			</div>
+			<div style={{position: 'absolute', left: 0, right: 0, top: 470, textAlign: 'center', fontFamily: clash, fontWeight: 700, fontSize: 92, letterSpacing: '-0.04em', color: C.ink, opacity: 1 - prog(t, end - 0.15, 0.45, IN_OUT)}}>
+				<Kinetic t={t} text="It's not just what they" times={[W('it'), W('not'), W('just'), W('what'), W('candidates')]} size={88} color={C.body} weight={400} />
+				<div style={{position: 'relative', height: 124, overflow: 'hidden'}}>
+					<div style={{position: 'absolute', left: 0, right: 0, transform: `translateY(${-swap * 110}%)`, opacity: prog(t, W('submit') - 0.1, 0.5)}}>submit.</div>
+					<div style={{position: 'absolute', left: 0, right: 0, transform: `translateY(${(1 - swap) * 110}%)`, color: C.green}}>it's how they get there.</div>
+				</div>
+			</div>
+		</AbsoluteFill>
+	);
+};
+
+// ── film ───────────────────────────────────────────────────────────────────────────────────────────
+
+export const VibeLevelCYG: React.FC<CygProps> = ({parts, cards, card, duration, segments, musicOffset}) => {
+	const t = useCurrentFrame() / FPS;
+	const q = useCues(parts);
+	const c = (i: number) => cards[i] ?? 0;
+	const s2 = q.P('s2').start - 0.45;
+	const s7 = q.P('s7').start - 0.5;
+	const s8 = q.P('s8').start - 0.35;
+	const scenes: [number, number, React.FC<SP>][] = [
+		[0, s2, S1Opening],
+		[s2, c(0), S2Assessment],
+		[c(0) + card - 0.05, c(1), S3Attempt1],
+		[c(1) + card - 0.05, c(2), S4Attempt2],
+		[c(2) + card - 0.05, c(3), S5Attempt3],
+		[c(3) + card - 0.05, s7, S6Attempt4],
+		[s7, s8, S7Report],
+		[s8, duration, S8Closing],
+	];
+	const W3 = (w: string) => q.W('s3', w);
+	const W4 = (w: string) => q.W('s4', w);
+	const W5 = (w: string) => q.W('s5', w);
+	// signals: each attempt shows only its own
+	const inA = (i: number) => t > c(i) + card && t < (i < 3 ? c(i + 1) - 0.3 : s7);
+	const trayItems: [SignalKey, number][] = inA(0)
+		? [['tab', W3('warning') + 0.4]]
+		: inA(1)
+			? [['paste', W4('workspace') + 0.6]]
+			: inA(2)
+				? [
+						['prompt', W5('everything') + 0.4],
+						['files', W5('files') + 0.2],
+						['copy', W5('edits') + 0.5],
+						['tests', W5('run') + 0.5],
+					]
+				: [];
+	const cornerO = prog(t, q.W('s1', 'today') + 0.2, 0.2) * (cards.some((x) => t > x - 0.3 && t < x + card + 0.05) ? 0 : 1) * (1 - prog(t, s8, 0.4));
+	return (
+		<AbsoluteFill style={{background: '#F4F7F2', fontFamily: inter}}>
+			{scenes.map(([a, b, S], i) => (t >= a - 0.02 && t < b + 0.02 ? <S key={i} t={t} q={q} a={a} b={b} /> : null))}
+			{cards.map((a, i) => (
+				<ChapterCard key={i} t={t} a={a} d={card} i={i} />
+			))}
+			{[s2, c(0), s7, s8].map((a, i) => (
+				<PixelWipe key={`w${i}`} p={prog(t, a - 0.5, 1.0, Easing.linear)} dir={i % 2 ? -1 : 1} />
+			))}
+			<Tray t={t} items={trayItems} />
+			<CornerMark o={cornerO} />
+			<AbsoluteFill style={{background: '#fff', opacity: prog(t, duration - 0.7, 0.7, Easing.linear)}} />
+			<Sound q={q} cards={cards} duration={duration} segments={segments} musicOffset={musicOffset} />
+		</AbsoluteFill>
+	);
+};
+
+// ── sound ──────────────────────────────────────────────────────────────────────────────────────────
+
+const Sound: React.FC<{q: Q; cards: number[]; duration: number; segments: {s: number; e: number}[]; musicOffset: number}> = ({q, cards, duration, segments, musicOffset}) => {
+	const speech = (t: number) => Math.max(0, ...segments.map((g) => prog(t, g.s - 0.25, 0.25, Easing.linear) * (1 - prog(t, g.e, 0.4, Easing.linear))));
+	const vol = (f: number) => {
+		const t = f / FPS;
+		const card = cards.some((c) => t > c && t < c + 2.3) ? 1 : 0;
+		const base = mix(0.13, 0.055, speech(t));
+		return (base + card * 0.03) * prog(t, 0, 0.8, Easing.linear) * (1 - prog(t, duration - 2.5, 2.5, Easing.linear));
+	};
+	const W = q.W;
+	const fx: [number, string, number][] = [
+		[0.15, 'logo-reveal', 0.2],
+		[W('s1', 'vibe') - 0.1, 'pixel-1', 0.14],
+		[W('s1', 'link') + 0.15, 'soft-click', 0.25],
+		[W('s2', 'signs') + 0.35, 'soft-click', 0.22],
+		[W('s2', 'ready') + 0.15, 'soft-click', 0.22],
+		...cards.flatMap((c): [number, string, number][] => [
+			[c + 0.05, 'build', 0.16],
+			[c + 0.45, 'whoosh', 0.12],
+		]),
+		...[q.P('s2').start - 0.95, cards[0] - 0.5, q.P('s7').start - 1.0, q.P('s8').start - 0.85].map((at): [number, string, number] => [at, 'pixels', 0.16]),
+		[W('s3', 'takes') - 0.1, 'shortcut', 0.28],
+		[W('s3', 'screenshot') + 1.05, 'paste', 0.2],
+		[W('s3', 'sends') - 0.05, 'tab', 0.14],
+		[W('s3', 'catches'), 'soft-click', 0.25],
+		[W('s3', 'warning') - 0.3, 'warn', 0.22],
+		[W('s4', 'copies') + 0.4, 'shortcut', 0.28],
+		[W('s4', 'paste') - 0.1, 'tab', 0.14],
+		[W('s4', 'workspace') - 0.35, 'shortcut', 0.28],
+		[W('s4', 'workspace') + 0.3, 'denied', 0.2],
+		[W('s5', 'lets') - 0.1, 'typing', 0.15],
+		[W('s5', 'everything') + 0.25, 'soft-click', 0.22],
+		[W('s5', 'run') - 0.1, 'soft-click', 0.22],
+		[W('s5', 'run') + 0.35, 'success', 0.15],
+		[W('s5', 'submits') - 0.1, 'soft-click', 0.25],
+		[q.P('a1').end + 0.15, 'tick', 0.2],
+		[W('s8', 'with') - 0.1, 'logo-reveal', 0.22],
+		...['tab', 'blocked', 'prompts', 'file', 'test', 'external', 'responsible', 'video'].map((w): [number, string, number] => [W('s7', w) - 0.25, 'cardslide', 0.14]),
+		[W('s7', 'one') - 0.35, 'spread', 0.16],
+	];
+	return (
+		<>
+			<Audio src={staticFile('cyg/music.mp3')} startFrom={Math.round(musicOffset * FPS)} volume={vol} />
+			<Audio src={staticFile('cyg/narration.wav')} />
+			{fx.map(([at, n, v], i) => (
+				<Sequence key={i} from={Math.max(0, Math.round(at * FPS))} durationInFrames={5 * FPS} layout="none">
+					<Audio src={staticFile(`cyg/sfx/${n}.mp3`)} volume={(f) => v * interpolate(f, [120, 150], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})} />
+				</Sequence>
+			))}
+		</>
+	);
+};

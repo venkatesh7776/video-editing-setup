@@ -1,0 +1,80 @@
+[
+ {
+  "id": "s1",
+  "text": "AI is changing the way work gets done. Today, a candidate can build more, solve faster, and deliver impressive results with AI. But for hiring teams, evaluating the person behind that work has become a whole new challenge.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s2",
+  "text": "Meet VibeLevel Screening. An AI-era assessment platform designed to help hiring teams look beyond the final result and understand how candidates think, work with AI, and contribute.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s3",
+  "text": "Candidates take on realistic, role-specific challenges in a dedicated workspace with Claude Code built in. They explore the problem, work through solutions, and collaborate with AI in an environment that reflects how work actually happens today.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s4a",
+  "text": "But completing the task is only part of the picture. VibeLevel evaluates candidates across four dimensions.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s4b",
+  "text": "Core Skills reveals how well they apply their knowledge.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s4c",
+  "text": "Working with AI shows how effectively they collaborate with AI and evaluate its output.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s4d",
+  "text": "Ownership highlights how they approach decisions and take responsibility.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s4e",
+  "text": "And Human Contribution reveals the judgment and value they bring beyond AI-generated work.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s5",
+  "text": "The experience continues beyond the assessment. Candidates complete a short AI-led interview, giving hiring teams another opportunity to understand their reasoning, knowledge, and ability to explain their work.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s6a",
+  "text": "Once the evaluation is complete, recruiters get a comprehensive assessment report. From overall performance and skill scores to AI collaboration insights, Code Review, and Video Q&A, every section adds another layer of understanding.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s6b",
+  "text": "The Interview Guide turns identified strengths and gaps into focused questions for the next conversation.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s7a",
+  "text": "Go beyond what candidates deliver. Understand how they think, work, and contribute.",
+  "stability": 0.5,
+  "speed": 1.08
+ },
+ {
+  "id": "s7b",
+  "text": "VibeLevel Screening. Hire for the skills that matter in the AI era.",
+  "stability": 0.5,
+  "speed": 1.08
+ }
+]

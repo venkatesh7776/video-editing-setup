@@ -1,0 +1,227 @@
+1
+00:00:00,350 --> 00:00:02,970
+Resumes tell you what candidates have done.
+
+2
+00:00:02,970 --> 00:00:03,750
+Interviews tell you
+
+3
+00:00:03,750 --> 00:00:05,850
+how well they present themselves.
+
+4
+00:00:05,850 --> 00:00:07,530
+But neither necessarily shows
+
+5
+00:00:07,530 --> 00:00:09,780
+how they perform when the work gets real.
+
+6
+00:00:11,560 --> 00:00:14,080
+That’s where VibeLevel Screening comes in.
+
+7
+00:00:14,080 --> 00:00:16,940
+Through realistic, role-specific tasks,
+
+8
+00:00:16,940 --> 00:00:20,100
+it evaluates candidates across four dimensions:
+
+9
+00:00:20,100 --> 00:00:22,680
+Core Skills, Working with AI, Ownership,
+
+10
+00:00:22,680 --> 00:00:23,670
+and Human Contribution.
+
+11
+00:00:25,110 --> 00:00:26,710
+Candidates tackle these tasks
+
+12
+00:00:26,710 --> 00:00:28,130
+in a dedicated workspace
+
+13
+00:00:28,130 --> 00:00:31,630
+with AI coding tools such as Claude Code,
+
+14
+00:00:31,630 --> 00:00:34,750
+Codex, GitHub Copilot, and more built in.
+
+15
+00:00:34,750 --> 00:00:37,270
+As they work through real challenges,
+
+16
+00:00:37,270 --> 00:00:38,570
+VibeLevel looks beyond the
+
+17
+00:00:38,570 --> 00:00:40,290
+final output to understand
+
+18
+00:00:40,290 --> 00:00:43,220
+how they solve problems and collaborate with AI.
+
+19
+00:00:44,210 --> 00:00:45,050
+First,
+
+20
+00:00:45,050 --> 00:00:47,350
+Core Skills shows how well candidates apply
+
+21
+00:00:47,350 --> 00:00:49,710
+their technical knowledge to the task.
+
+22
+00:00:49,710 --> 00:00:51,010
+Working with AI reveals
+
+23
+00:00:51,010 --> 00:00:53,530
+how effectively they guide AI,
+
+24
+00:00:53,530 --> 00:00:56,460
+evaluate its suggestions, and verify the results.
+
+25
+00:00:57,350 --> 00:01:00,630
+But technical ability is only part of the picture.
+
+26
+00:01:00,630 --> 00:01:02,790
+Ownership reveals how candidates take
+
+27
+00:01:02,790 --> 00:01:05,170
+responsibility for their decisions,
+
+28
+00:01:05,170 --> 00:01:07,710
+while Human Contribution highlights the judgment
+
+29
+00:01:07,710 --> 00:01:11,300
+and value they bring beyond AI-generated output.
+
+30
+00:01:12,230 --> 00:01:14,150
+To evaluate the right skills,
+
+31
+00:01:14,150 --> 00:01:15,150
+recruiters can start
+
+32
+00:01:15,150 --> 00:01:17,550
+with ready-made assessment templates,
+
+33
+00:01:17,550 --> 00:01:19,870
+customize them to their role requirements,
+
+34
+00:01:19,870 --> 00:01:22,030
+or use AI to create assessments
+
+35
+00:01:22,030 --> 00:01:24,790
+by simply describing what they need.
+
+36
+00:01:24,790 --> 00:01:26,450
+And these assessments can integrate
+
+37
+00:01:26,450 --> 00:01:30,230
+with ATS platforms such as Lever and Ashby,
+
+38
+00:01:30,230 --> 00:01:31,470
+fitting directly into their
+
+39
+00:01:31,470 --> 00:01:33,060
+existing hiring workflow.
+
+40
+00:01:33,920 --> 00:01:36,540
+Once candidates complete their assessments,
+
+41
+00:01:36,540 --> 00:01:38,200
+recruiters get a clearer picture of
+
+42
+00:01:38,200 --> 00:01:40,460
+their performance through skill scores,
+
+43
+00:01:40,460 --> 00:01:43,480
+AI collaboration insights, Code Review,
+
+44
+00:01:43,480 --> 00:01:45,000
+and Video Q&A.
+
+45
+00:01:45,000 --> 00:01:47,580
+The Interview Guide then turns those findings
+
+46
+00:01:47,580 --> 00:01:49,960
+into focused follow-up questions,
+
+47
+00:01:49,960 --> 00:01:51,840
+helping recruiters explore strengths
+
+48
+00:01:51,840 --> 00:01:53,490
+and gaps in greater depth.
+
+49
+00:01:54,800 --> 00:01:57,720
+With a clearer view of how candidates think, work,
+
+50
+00:01:57,720 --> 00:02:00,580
+and use AI, you can identify strengths,
+
+51
+00:02:00,580 --> 00:02:01,580
+uncover gaps,
+
+52
+00:02:01,580 --> 00:02:03,610
+and build a shortlist backed by evidence.
+
+53
+00:02:04,820 --> 00:02:06,360
+When AI can do the work,
+
+54
+00:02:06,360 --> 00:02:08,940
+know what makes a candidate stand out,
+
+55
+00:02:08,940 --> 00:02:10,949
+across developer and non-developer roles.
+
+56
+00:02:12,080 --> 00:02:13,840
+VibeLevel Screening.
+
+57
+00:02:13,840 --> 00:02:14,410
+Book a demo.

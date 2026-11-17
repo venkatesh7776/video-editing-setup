@@ -1,0 +1,41 @@
+# Telugu wedding-website reel — generated assets
+
+| id | model | refs / source | status | file |
+|---|---|---|---|---|
+| c1-v1 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c1-v1.png |
+| c2-v1 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c2-v1.png |
+| c1-v2 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c1-v2.png |
+| c2-v2 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c2-v2.png |
+| c1-v3 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c1-v3.png |
+| c1-v4 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c1-v4.png |
+| c2-v4 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c2-v4.png |
+| c2-v3 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/c2-v3.png |
+| t-l2 | veo-3.1 i2v 9:16 4s (divya.png) | ok | work/telugu-reel/gen/t-l2.mp4 |
+| cta1 | veo-3.1 i2v 9:16 4s (divya.png) | ok | work/telugu-reel/gen/cta1.mp4 |
+| l3 | veo-3.1 i2v 9:16 6s (sravya.png) | ok | work/telugu-reel/gen/l3.mp4 |
+| l1 | veo-3.1 i2v 9:16 6s (sravya.png) | ok | work/telugu-reel/gen/l1.mp4 |
+| cta2 | veo-3.1 i2v 9:16 8s (divya.png) | ok | work/telugu-reel/gen/cta2.mp4 |
+| l4 | veo-3.1 i2v 9:16 8s (divya.png) | ok | work/telugu-reel/gen/l4.mp4 |
+| g-venue | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-venue.png |
+| g-question | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-question.png |
+| g-invite | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-invite.png |
+| g-cal | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-cal.png |
+| g-video | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-video.png |
+| g-chat | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-chat.png |
+| g-2026 | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-2026.png |
+| g-bulb | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-bulb.png |
+| g-map | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-map.png |
+| g-clock | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-clock.png |
+| g-haldi | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-haldi.png |
+| g-link | gemini-3-pro-image 9:16 | refs: — | ok | work/telugu-reel/gen/g-link.png |
+| s2-v2 | gemini-3-pro-image 9:16 | refs: sravya.png | ok | work/telugu-reel/gen/s2-v2.png |
+| s2-v1 | gemini-3-pro-image 9:16 | refs: sravya.png | ok | work/telugu-reel/gen/s2-v1.png |
+| d2-v1 | gemini-3-pro-image 9:16 | refs: divya.png | ok | work/telugu-reel/gen/d2-v1.png |
+| d2-v2 | gemini-3-pro-image 9:16 | refs: divya.png | ok | work/telugu-reel/gen/d2-v2.png |
+| l2b | veo-3.1 i2v 9:16 6s (d2-v1-flip.png) | ok | work/telugu-reel/gen/l2b.mp4 |
+| l1b | veo-3.1 i2v 9:16 8s (s2-v1.png) | ok | work/telugu-reel/gen/l1b.mp4 |
+| l3b | veo-3.1 i2v 9:16 8s (s2-v1.png) | ok | work/telugu-reel/gen/l3b.mp4 |
+| l4b | veo-3.1 i2v 9:16 8s (d2-v1-flip.png) | ok | work/telugu-reel/gen/l4b.mp4 |
+| cta1b | veo-3.1 i2v 9:16 6s (d2-v1-flip.png) | ok | work/telugu-reel/gen/cta1b.mp4 |
+| cta2b | veo-3.1 i2v 9:16 8s (d2-v1-flip.png) | ok | work/telugu-reel/gen/cta2b.mp4 |
+| l4c | veo-3.1 i2v 9:16 8s (d2-v1-flip.png) | ok | work/telugu-reel/gen/l4c.mp4 |

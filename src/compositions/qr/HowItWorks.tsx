@@ -1,0 +1,685 @@
+// The Digital Moments — "How Moments QR works" (16:9, ~1:35), projects/qr-howitworks.
+// Brand (the-digital-moments.vercel.app): flat blush-ivory surfaces, warm near-black ink, dark ink pill buttons,
+// copper accents, Manrope; the gold "Dm" logo. Founder: Venkatesh Yarramsetti.
+// One iPhone persists through the whole film and glides between layouts; its screen cross-fades between the real
+// recordings. Text changes are soft fades/slides. All timing comes from the ElevenLabs word timings (props.parts).
+import {loadFont as loadManrope} from '@remotion/google-fonts/Manrope';
+import React from 'react';
+import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame, type CalculateMetadataFunction} from 'remotion';
+import {IPhone15, SCR_H, SCR_W} from './Memories';
+
+const font = loadManrope('normal', {weights: ['400', '500', '600', '700', '800'], subsets: ['latin']}).fontFamily;
+
+const FPS = 30;
+const B = {
+	bg: '#FAF6F2',
+	ink: '#1E1714',
+	body: '#4A3F39',
+	muted: '#9A8D84',
+	line: '#E6DBD1',
+	copper: '#B4712E',
+	pill: '#231B17',
+	maroon: '#651E2B',
+};
+
+type Word = {w: string; s: number; e: number};
+type Part = {id: string; start: number; end: number; words: Word[]};
+export type HiwProps = {parts: Part[]; duration: number; segments: {s: number; e: number}[]; musicOffset: number};
+export const calculateHiwMetadata: CalculateMetadataFunction<HiwProps> = ({props}) => ({fps: FPS, durationInFrames: Math.max(1, Math.ceil(props.duration * FPS))});
+
+const SOFT = Easing.bezier(0.25, 0.1, 0.25, 1);
+const IN_OUT = Easing.bezier(0.65, 0, 0.35, 1);
+const GLIDE = Easing.bezier(0.45, 0, 0.15, 1);
+const prog = (t: number, a: number, d: number, e: (x: number) => number = SOFT) => interpolate(t, [a, a + d], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: e});
+const mix = (a: number, b: number, p: number) => a + (b - a) * p;
+const clean = (w: string) => w.toLowerCase().replace(/[^a-z']/g, '');
+
+const useTimes = (parts: Part[]) => {
+	const P = (id: string) => parts.find((p) => p.id === id) ?? {id, start: 0, end: 0, words: []};
+	const W = (id: string, word: string, k = 0) => {
+		const hits = P(id).words.filter((w) => clean(w.w).startsWith(word));
+		return (hits[k] ?? hits[hits.length - 1] ?? {s: P(id).start}).s;
+	};
+	return {P, W};
+};
+type T = ReturnType<typeof useTimes>;
+
+// ── brand pieces ────────────────────────────────────────────────────────────────────────────────────
+
+const LOGO_AR = 1334 / 753;
+const LogoImg: React.FC<{h: number}> = ({h}) => <Img src={staticFile('qrh/img/tdm-logo.png')} style={{height: h, width: h * LOGO_AR, display: 'block'}} />;
+
+const Backdrop: React.FC = () => (
+	<AbsoluteFill style={{background: B.bg}}>
+		<AbsoluteFill style={{background: 'radial-gradient(ellipse 70% 60% at 50% -10%, rgba(244,226,210,0.7), rgba(250,246,242,0) 70%)'}} />
+	</AbsoluteFill>
+);
+
+/** Fades a block in (rising) at `a` and out (lifting) at `b`. */
+const Fade: React.FC<{t: number; a: number; b?: number; children: React.ReactNode}> = ({t, a, b = 1e9, children}) => {
+	const i = prog(t, a, 0.6);
+	const o = prog(t, b, 0.45);
+	if (i <= 0 || o >= 1) return null;
+	return <div style={{position: 'absolute', inset: 0, opacity: i * (1 - o), transform: `translateY(${(1 - i) * 26 - o * 18}px)`}}>{children}</div>;
+};
+
+const Label: React.FC<{children: React.ReactNode}> = ({children}) => (
+	<div style={{display: 'flex', alignItems: 'center', gap: 16, fontFamily: font, fontWeight: 700, fontSize: 22, letterSpacing: '0.18em', textTransform: 'uppercase', color: B.copper}}>
+		{children}
+		<div style={{width: 64, height: 2, background: B.copper, opacity: 0.5}} />
+	</div>
+);
+
+/** Left column: step label, two-line headline, numbered points that arrive on the voice. */
+const StepText: React.FC<{t: number; label: string; l1: string; l2: string; items: [number, string][]}> = ({t, label, l1, l2, items}) => {
+	const latest = items.filter(([at]) => t >= at - 0.1).length - 1;
+	return (
+		<div style={{position: 'absolute', left: 150, width: 760, top: 210}}>
+			<Label>{label}</Label>
+			<div style={{marginTop: 26, fontFamily: font, fontWeight: 800, fontSize: 80, lineHeight: 1.05, letterSpacing: '-0.035em', color: B.ink}}>
+				{l1}
+				<br />
+				<span style={{color: B.copper}}>{l2}</span>
+			</div>
+			<div style={{marginTop: 54, display: 'flex', flexDirection: 'column', gap: 24}}>
+				{items.map(([at, text], i) => {
+					const p = prog(t, at - 0.12, 0.5);
+					const on = i === latest;
+					return (
+						<div key={text} style={{display: 'flex', alignItems: 'baseline', gap: 22, opacity: p, transform: `translateY(${(1 - p) * 14}px)`}}>
+							<div style={{width: 40, fontFamily: font, fontWeight: 700, fontSize: 22, color: on ? B.copper : B.muted, fontVariantNumeric: 'tabular-nums'}}>{String(i + 1).padStart(2, '0')}</div>
+							<div style={{fontFamily: font, fontWeight: on ? 700 : 600, fontSize: 38, letterSpacing: '-0.015em', color: on ? B.ink : B.body}}>{text}</div>
+						</div>
+					);
+				})}
+			</div>
+		</div>
+	);
+};
+
+const Callout: React.FC<{t: number; at: number; until?: number; x: number; y: number; children: React.ReactNode}> = ({t, at, until = 1e9, x, y, children}) => {
+	const p = prog(t, at, 0.4) * (1 - prog(t, until, 0.35));
+	if (p <= 0) return null;
+	return (
+		<div style={{position: 'absolute', left: x, top: y, padding: '14px 24px', borderRadius: 999, background: B.pill, color: '#FFFFFF', fontFamily: font, fontWeight: 600, fontSize: 24, boxShadow: '0 18px 36px -18px rgba(30,23,20,0.55)', opacity: p, transform: `translateX(${(1 - p) * -14}px)`, whiteSpace: 'nowrap'}}>
+			{children}
+		</div>
+	);
+};
+
+const STEPS = ['Create & generate', 'Place & scan', 'Guests upload', 'Your website'];
+/** Story-style progress: four thin bars, the active one fills through its step. */
+const Tracker: React.FC<{t: number; starts: number[]; end: number; o: number}> = ({t, starts, end, o}) => (
+	<div style={{position: 'absolute', left: 150, bottom: 56, display: 'flex', gap: 22, opacity: o}}>
+		{STEPS.map((s, i) => {
+			const a = starts[i];
+			const b = i < 3 ? starts[i + 1] : end;
+			const fill = interpolate(t, [a, b], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+			const on = t >= a && t < b;
+			return (
+				<div key={s} style={{width: 170}}>
+					<div style={{height: 3, borderRadius: 2, background: B.line, overflow: 'hidden'}}>
+						<div style={{height: 3, width: `${fill * 100}%`, background: on ? B.copper : B.ink}} />
+					</div>
+					<div style={{marginTop: 10, fontFamily: font, fontWeight: on ? 700 : 500, fontSize: 18, color: on ? B.ink : B.muted}}>{s}</div>
+				</div>
+			);
+		})}
+	</div>
+);
+
+// ── recordings ─────────────────────────────────────────────────────────────────────────────────────
+
+/** A recording time-mapped onto the film: keys are [filmTime, srcTime]; each span plays at its own speed. */
+const Mapped: React.FC<{s: number; src: string; keys: [number, number][]}> = ({s, src, keys}) => {
+	const k: [number, number][] = [];
+	for (const [r, x] of keys) k.push([k.length ? Math.max(r, k[k.length - 1][0] + 0.25) : r, x]);
+	return (
+		<>
+			{k.slice(0, -1).map(([r0, s0], i) => {
+				const [r1, s1] = k[i + 1];
+				const rate = Math.max(0.08, (s1 - s0) / (r1 - r0));
+				return (
+					<Sequence key={i} from={Math.round(r0 * FPS)} durationInFrames={Math.max(1, Math.round((r1 - r0) * FPS))} layout="none">
+						<OffthreadVideo src={staticFile(`qrh/${src}`)} startFrom={Math.round(s0 * FPS)} playbackRate={rate} muted style={{position: 'absolute', left: 0, top: 0, width: SCR_W * s, height: SCR_H * s, objectFit: 'cover'}} />
+					</Sequence>
+				);
+			})}
+		</>
+	);
+};
+const Still: React.FC<{s: number; src: string; o?: number}> = ({s, src, o = 1}) => <Img src={staticFile(`qrh/img/${src}`)} style={{position: 'absolute', left: 0, top: 0, width: SCR_W * s, height: SCR_H * s, objectFit: 'cover', opacity: o}} />;
+const Layer: React.FC<{t: number; a: number; b: number; children: React.ReactNode}> = ({t, a, b, children}) => (t < a || t > b ? null : <div style={{position: 'absolute', inset: 0, opacity: prog(t, a, 0.45)}}>{children}</div>);
+
+// ── timeline ───────────────────────────────────────────────────────────────────────────────────────
+
+const useCues = (c: T, duration: number) => {
+	const at = (id: string) => c.P(id).start - 0.55;
+	const h1 = (w: string, k = 0) => c.W('h1', w, k);
+	const h2 = (w: string, k = 0) => c.W('h2', w, k);
+	const h3 = (w: string, k = 0) => c.W('h3', w, k);
+	const h4 = (w: string, k = 0) => c.W('h4', w, k);
+	const h5 = (w: string, k = 0) => c.W('h5', w, k);
+	return {S1: at('h1'), S2: at('h2'), S3: at('h3'), S4: at('h4'), S5: at('h5'), end: duration, h1, h2, h3, h4, h5, scan: h2('scan'), scroll: h4('open'), sent: c.P('h3').end + 0.15};
+};
+type Cues = ReturnType<typeof useCues>;
+
+const PX = 1340;
+const PY = 90;
+const PH = 900;
+/** The one phone: [time, centre x, screen top, screen height] keyframes, eased between. */
+const phonePose = (t: number, q: Cues): [number, number, number] => {
+	const OFF = 1260;
+	const keys: [number, number, number, number][] = [
+		[0, PX, OFF, PH],
+		[q.S1 - 0.1, PX, OFF, PH],
+		[q.S1 + 0.9, PX, PY, PH],
+		[q.S2 - 0.05, PX, PY, PH],
+		[q.S2 + 0.75, PX, OFF, PH],
+		[q.scan - 0.45, 1690, OFF, 640],
+		[q.scan + 0.45, 1690, 320, 640],
+		[q.S3 - 0.1, 1690, 320, 640],
+		[q.S3 + 0.9, PX, PY, PH],
+		[q.S5 - 0.1, PX, PY, PH],
+		[q.S5 + 0.8, PX, OFF, PH],
+	];
+	const i = keys.findIndex((k) => k[0] > t);
+	if (i === 0) return [keys[0][1], keys[0][2], keys[0][3]];
+	if (i === -1) {
+		const l = keys[keys.length - 1];
+		return [l[1], l[2], l[3]];
+	}
+	const [t0, x0, y0, h0] = keys[i - 1];
+	const [t1, x1, y1, h1] = keys[i];
+	const p = GLIDE(Math.min(1, Math.max(0, (t - t0) / Math.max(0.001, t1 - t0))));
+	return [mix(x0, x1, p), mix(y0, y1, p), mix(h0, h1, p)];
+};
+
+// ── the phone's screens ────────────────────────────────────────────────────────────────────────────
+
+const NOTE = 'Wishing you both a lifetime of love & laughter!';
+const Screens: React.FC<{t: number; s: number; q: Cues}> = ({t, s, q}) => {
+	const {h1, h2, h3, h4} = q;
+	// step 3 geometry (upload-form.png = the guest recording frozen at 19.2 s)
+	const fStart = h3('upload') + 0.75;
+	const freeze = fStart + 0.45;
+	const shareAt = q.sent - 0.1;
+	const FIELD = {x: 84, y: 752, w: 718};
+	const HEART = [133, 1075] as const;
+	const LOVE = [367, 1075] as const;
+	const VOICE = {x: 86, y: 1300, w: 714, h: 160, mic: [176, 1380] as const};
+	const typed = Math.round(prog(t, h3('note') - 0.25, 0.9, Easing.linear) * NOTE.length);
+	const rec = prog(t, h3('voice') - 0.1, 0.3);
+	const recSec = Math.max(0, t - (h3('voice') - 0.1));
+	const sel = (at: number) => prog(t, at, 0.35, Easing.bezier(0.3, 1.5, 0.5, 1));
+	// step 2 viewfinder
+	const lock = prog(t, h2('camera') - 0.1, 0.55, IN_OUT);
+	const banner = prog(t, h2('camera') + 0.45, 0.4);
+	const sw = SCR_W * s;
+	const sh = SCR_H * s;
+	return (
+		<>
+			{/* 1 · couple creates the folder + QR card */}
+			<Layer t={t} a={q.S1 - 0.2} b={q.S2 + 0.9}>
+				<Mapped
+					s={s}
+					src="folder.mp4"
+					keys={[
+						[q.S1 - 0.2, 0],
+						[h1('create') + 0.9, 4.6],
+						[h1('generate') - 0.2, 13.6],
+						[h1('generate') + 0.6, 15.8],
+						[h1('beautiful') + 0.9, 19.6],
+						[h1('download') + 0.5, 26.9],
+						[q.S2 + 1.0, 28.6],
+					]}
+				/>
+			</Layer>
+			{/* 2 · the guest's camera finds the QR, then the upload page opens */}
+			<Layer t={t} a={q.scan - 0.5} b={q.S3 + 0.8}>
+				<div style={{position: 'absolute', inset: 0, background: '#120C0A'}} />
+				{(() => {
+					const cw = sw * 1.75;
+					const ch = cw * (3200 / 2400);
+					const jx = Math.sin(t * 2.3) * 4 * (1 - lock);
+					const jy = Math.cos(t * 1.9) * 5 * (1 - lock);
+					const sz = sw * mix(0.92, 0.7, lock);
+					const x0 = sw / 2 - sz / 2;
+					const y0 = sh * 0.47 - sz / 2;
+					const L = sz * 0.22;
+					const st = {position: 'absolute' as const, width: L, height: L, borderColor: '#FFD43B', borderStyle: 'solid', borderWidth: 0};
+					return (
+						<>
+							<Img src={staticFile('qrh/img/qr-card.png')} style={{position: 'absolute', left: sw / 2 - cw * 0.5 + jx, top: sh * 0.47 - ch * 0.569 + jy, width: cw, height: ch}} />
+							<div style={{position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 55% at 50% 47%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.4))'}} />
+							<div style={{...st, left: x0, top: y0, borderTopWidth: 5, borderLeftWidth: 5, borderTopLeftRadius: 12}} />
+							<div style={{...st, left: x0 + sz - L, top: y0, borderTopWidth: 5, borderRightWidth: 5, borderTopRightRadius: 12}} />
+							<div style={{...st, left: x0, top: y0 + sz - L, borderBottomWidth: 5, borderLeftWidth: 5, borderBottomLeftRadius: 12}} />
+							<div style={{...st, left: x0 + sz - L, top: y0 + sz - L, borderBottomWidth: 5, borderRightWidth: 5, borderBottomRightRadius: 12}} />
+							{banner > 0 ? (
+								<div style={{position: 'absolute', left: sw * 0.1, top: sh * 0.47 + sw * 0.42, width: sw * 0.8, padding: `${24 * s}px ${34 * s}px`, borderRadius: 40 * s, background: 'rgba(255,212,59,0.96)', opacity: banner, transform: `translateY(${(1 - banner) * 12}px)`, boxSizing: 'border-box', fontFamily: 'Helvetica Neue, Arial', color: '#1A1A1A'}}>
+									<div style={{fontWeight: 600, fontSize: 42 * s}}>Website QR code</div>
+									<div style={{fontWeight: 400, fontSize: 36 * s}}>wedding-memories-iota.vercel.app</div>
+								</div>
+							) : null}
+						</>
+					);
+				})()}
+				<Still s={s} src="upload-start.png" o={prog(t, h2('no') + 0.15, 0.45)} />
+			</Layer>
+			{/* 3 · the guest uploads */}
+			<Layer t={t} a={q.S3 + 0.2} b={q.S4 + 0.9}>
+				<Mapped
+					s={s}
+					src="r23.mp4"
+					keys={[
+						[q.S3 + 0.2, 0.4],
+						[h3('upload') + 0.3, 0.9],
+						[h3('upload') + 0.35, 1.4],
+						[fStart, 2.4],
+					]}
+				/>
+				<Mapped
+					s={s}
+					src="r23.mp4"
+					keys={[
+						[fStart, 17.9],
+						[freeze, 19.2],
+					]}
+				/>
+				{t >= freeze && t < shareAt ? (
+					<>
+						<Still s={s} src="upload-form.png" />
+						{typed > 0 ? (
+							<div style={{position: 'absolute', left: FIELD.x * s, top: FIELD.y * s, width: FIELD.w * s, height: 140 * s, background: '#FCF4ED'}}>
+								<div style={{fontFamily: 'Cormorant Garamond, Georgia, serif', fontStyle: 'italic', fontSize: 44 * s, lineHeight: `${52 * s}px`, color: '#3A2A2C', paddingTop: 12 * s}}>
+									{NOTE.slice(0, typed)}
+									<span style={{display: 'inline-block', width: 2.5 * s, height: 44 * s, marginLeft: 2 * s, background: B.maroon, verticalAlign: 'middle', opacity: typed < NOTE.length || Math.floor(t * 2.4) % 2 ? 1 : 0}} />
+								</div>
+							</div>
+						) : null}
+						{(
+							[
+								[HEART[0], HEART[1], sel(h3('reaction') - 0.05)],
+								[LOVE[0], LOVE[1], sel(h3('reaction') + 0.35)],
+							] as [number, number, number][]
+						).map(([cx, cy, p], i) =>
+							p > 0 ? <div key={i} style={{position: 'absolute', left: (cx - 54) * s, top: (cy - 54) * s, width: 108 * s, height: 108 * s, borderRadius: '50%', border: `${4.5 * s}px solid ${B.maroon}`, boxSizing: 'border-box', background: 'rgba(101,30,43,0.07)', transform: `scale(${mix(0.6, 1, p)})`, opacity: Math.min(1, p * 2)}} /> : null,
+						)}
+						{rec > 0 ? (
+							<div style={{position: 'absolute', left: VOICE.x * s, top: VOICE.y * s, width: VOICE.w * s, height: VOICE.h * s, borderRadius: 10 * s, background: '#F7EAE6', boxShadow: `inset 0 0 0 ${2.5 * s}px ${B.maroon}`, opacity: rec}}>
+								{[0, 1].map((k) => {
+									const ring = (recSec * 0.9 + k * 0.5) % 1;
+									return <div key={k} style={{position: 'absolute', left: (VOICE.mic[0] - VOICE.x - 54) * s, top: (VOICE.mic[1] - VOICE.y - 54) * s, width: 108 * s, height: 108 * s, borderRadius: '50%', border: `${3 * s}px solid ${B.maroon}`, transform: `scale(${1 + ring * 0.55})`, opacity: 0.5 * (1 - ring)}} />;
+								})}
+								<div style={{position: 'absolute', left: (VOICE.mic[0] - VOICE.x - 54) * s, top: (VOICE.mic[1] - VOICE.y - 54) * s, width: 108 * s, height: 108 * s, borderRadius: '50%', background: B.maroon, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+									<div style={{width: 30 * s, height: 30 * s, borderRadius: 5 * s, background: '#FAF5EC'}} />
+								</div>
+								<div style={{position: 'absolute', left: 181 * s, top: 34 * s, fontFamily: font, fontWeight: 600, fontSize: 34 * s, color: B.maroon, display: 'flex', alignItems: 'center', gap: 12 * s}}>
+									<span style={{width: 16 * s, height: 16 * s, borderRadius: '50%', background: '#C8333F', opacity: Math.floor(t * 2.5) % 2 ? 1 : 0.35}} />
+									Recording… 0:0{Math.min(9, Math.floor(recSec))}
+								</div>
+								<div style={{position: 'absolute', left: 181 * s, top: 92 * s, display: 'flex', alignItems: 'center', gap: 7 * s, height: 40 * s}}>
+									{Array.from({length: 34}, (_, k) => {
+										const amp = 0.25 + 0.75 * Math.abs(Math.sin(k * 1.7 + t * 9) * Math.sin(k * 0.6 + t * 4.3));
+										const on = k / 34 < Math.min(1, recSec / 2.4);
+										return <div key={k} style={{width: 7 * s, height: 40 * s * (on ? amp : 0.12), borderRadius: 4 * s, background: on ? '#C5A15B' : '#D9C9B0'}} />;
+									})}
+								</div>
+							</div>
+						) : null}
+					</>
+				) : null}
+				{t >= shareAt - 0.05 ? (
+					<Mapped
+						s={s}
+						src="r23.mp4"
+						keys={[
+							[shareAt - 0.05, 31.9],
+							[shareAt + 0.6, 33.3],
+							[shareAt + 1.3, 37.7],
+							[q.S4 + 1.0, 39.6],
+						]}
+					/>
+				) : null}
+			</Layer>
+			{/* 4 · the wedding website, then Wedding Memories */}
+			<Layer t={t} a={q.S4 + 0.2} b={q.scroll + 0.6}>
+				<Mapped
+					s={s}
+					src="site.mp4"
+					keys={[
+						[q.S4 + 0.2, 1.4],
+						[h4('names') + 0.4, 3.4],
+						[h4('story') + 0.4, 6.4],
+						[h4('event') + 0.2, 10.6],
+						[q.scroll + 0.6, 16.6],
+					]}
+				/>
+			</Layer>
+			<Layer t={t} a={q.scroll - 0.1} b={q.end}>
+				<Mapped
+					s={s}
+					src="r22.mp4"
+					keys={[
+						[q.scroll - 0.1, 0.0],
+						[h4('photo') - 0.1, 6.3],
+						[h4('album') + 0.4, 12.0],
+						[q.S5 + 1.0, 17.8],
+					]}
+				/>
+			</Layer>
+		</>
+	);
+};
+
+// ── scenes (everything but the phone) ──────────────────────────────────────────────────────────────
+
+const FlowIcon: React.FC<{kind: 'qr' | 'up' | 'site'}> = ({kind}) => (
+	<svg viewBox="0 0 24 24" width={40} height={40} fill="none" stroke={B.ink} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
+		{kind === 'qr' && <path d="M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h2v2h-2z M18 14h2 M14 18h2 M18 18h2v2" />}
+		{kind === 'up' && <path d="M12 16V4 M7 9l5-5 5 5 M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" />}
+		{kind === 'site' && <path d="M3 5h18v14H3z M3 9h18 M6.5 7h.01 M9 7h.01 M7 12h6 M7 15h10" />}
+	</svg>
+);
+
+const Intro: React.FC<{t: number; c: T; q: Cues}> = ({t, c, q}) => {
+	const tHi = c.W('h0', 'hi');
+	const tLet = c.W('h0', 'let');
+	const word = prog(t, 0.9, 0.8) * (1 - prog(t, tHi - 0.9, 0.4));
+	const side = prog(t, tLet - 0.3, 0.9, GLIDE);
+	const flow: [number, 'qr' | 'up' | 'site', string, string][] = [
+		[c.W('h0', 'show') - 0.1, 'qr', 'Guests scan your QR', 'At the wedding'],
+		[c.W('h0', 'moments', 1) - 0.1, 'up', 'They upload photos', 'With a note, reaction or voice'],
+		[c.W('h0', 'works') + 0.1, 'site', 'It lands on your website', 'Your own wedding website'],
+	];
+	return (
+		<>
+			{/* wordmark under the opening logo (the logo itself docks into the corner, see Brand) */}
+			<div style={{position: 'absolute', left: 0, right: 0, top: 650, textAlign: 'center', fontFamily: font, fontWeight: 700, fontSize: 60, letterSpacing: '-0.02em', color: B.ink, opacity: word, transform: `translateY(${(1 - prog(t, 0.9, 0.8)) * 16}px)`}}>
+				The Digital Moments
+			</div>
+			<Fade t={t} a={tHi - 0.25} b={q.S1 - 0.35}>
+				<div style={{position: 'absolute', left: mix(960, 500, side) - 380, top: 230, width: 760, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+					<div style={{width: 380, height: 380, borderRadius: '50%', padding: 6, background: '#fff', boxShadow: `0 0 0 1px ${B.line}, 0 40px 70px -34px rgba(80,50,30,0.45)`}}>
+						<Img src={staticFile('qrh/img/founder.png')} style={{width: 368, height: 368, borderRadius: '50%', display: 'block'}} />
+					</div>
+					<div style={{marginTop: 40, fontFamily: font, fontWeight: 800, fontSize: 54, letterSpacing: '-0.025em', color: B.ink}}>Venkatesh Yarramsetti</div>
+					<div style={{marginTop: 10, fontFamily: font, fontWeight: 600, fontSize: 28, color: B.copper}}>Founder, The Digital Moments</div>
+				</div>
+			</Fade>
+			<Fade t={t} a={tLet} b={q.S1 - 0.35}>
+				<div style={{position: 'absolute', left: 990, width: 820, top: 190}}>
+					<Label>Moments QR</Label>
+					<div style={{marginTop: 20, fontFamily: font, fontWeight: 800, fontSize: 104, lineHeight: 1, letterSpacing: '-0.045em', color: B.ink}}>How it works.</div>
+					<div style={{marginTop: 48, display: 'flex', flexDirection: 'column', gap: 16}}>
+						{flow.map(([at, icon, title, sub], i) => {
+							const p = prog(t, at, 0.5);
+							return (
+								<div key={title} style={{display: 'flex', alignItems: 'center', gap: 24, width: 640, padding: '22px 28px', borderRadius: 20, background: '#fff', boxShadow: `inset 0 0 0 1.5px ${B.line}`, opacity: p, transform: `translateY(${(1 - p) * 16}px)`}}>
+									<div style={{width: 64, height: 64, borderRadius: 16, background: '#F4ECE5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+										<FlowIcon kind={icon} />
+									</div>
+									<div>
+										<div style={{fontFamily: font, fontWeight: 700, fontSize: 22, color: B.copper}}>{String(i + 1).padStart(2, '0')}</div>
+										<div style={{fontFamily: font, fontWeight: 800, fontSize: 34, letterSpacing: '-0.02em', color: B.ink}}>{title}</div>
+										<div style={{fontFamily: font, fontWeight: 500, fontSize: 22, color: B.body, marginTop: 2}}>{sub}</div>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+				</div>
+			</Fade>
+		</>
+	);
+};
+
+/** The logo: big and centred at the open, then it glides into the top-left brand mark. */
+const Brand: React.FC<{t: number; c: T; q: Cues}> = ({t, c, q}) => {
+	const tHi = c.W('h0', 'hi');
+	const logoIn = prog(t, 0.2, 1.2);
+	const dock = prog(t, tHi - 0.95, 1.0, GLIDE);
+	const out = prog(t, q.h5('message') - 0.6, 0.45);
+	const h = mix(300, 46, dock);
+	const x = mix(960 - (300 * LOGO_AR) / 2, 64, dock);
+	const y = mix(300, 40, dock);
+	const word = prog(t, tHi - 0.2, 0.5) * (1 - out);
+	return (
+		<>
+			<div style={{position: 'absolute', left: x, top: y, opacity: logoIn * (1 - out), transform: `scale(${mix(0.94, 1, logoIn)})`, transformOrigin: 'left top', filter: `blur(${(1 - logoIn) * 8}px)`}}>
+				<LogoImg h={h} />
+			</div>
+			<div style={{position: 'absolute', left: 64 + 46 * LOGO_AR + 14, top: 50, fontFamily: font, fontWeight: 700, fontSize: 24, letterSpacing: '-0.01em', color: B.ink, opacity: word}}>The Digital Moments</div>
+		</>
+	);
+};
+
+const Venue: React.FC<{t: number; q: Cues}> = ({t, q}) => {
+	const {h2} = q;
+	const i = prog(t, q.S2 + 0.35, 0.9, GLIDE);
+	const o = prog(t, q.S3 - 0.1, 0.7, GLIDE);
+	if (i <= 0 || o >= 1) return null;
+	const card = prog(t, h2('place') - 0.1, 0.9, Easing.bezier(0.2, 0.9, 0.3, 1));
+	const X = 930;
+	const Wd = 620;
+	return (
+		<div style={{position: 'absolute', left: X, top: 110, width: Wd, height: 860, borderRadius: 24, overflow: 'hidden', opacity: i * (1 - o), transform: `translateY(${(1 - i) * 60 - o * 40}px)`, boxShadow: '0 50px 90px -45px rgba(60,35,20,0.55)'}}>
+			<Sequence from={Math.round(q.S2 * FPS)} layout="none">
+				<OffthreadVideo src={staticFile('qrh/a2.mp4')} muted style={{position: 'absolute', left: -60, top: -60, width: Wd + 120, height: 980, objectFit: 'cover', filter: 'blur(14px) brightness(0.78)'}} />
+			</Sequence>
+			<div style={{position: 'absolute', left: Wd / 2 - 225, top: 100, width: 450, opacity: card, transform: `translateY(${(1 - card) * 50}px)`}}>
+				<Img src={staticFile('qrh/img/qr-card.png')} style={{width: 450, height: 600, display: 'block', borderRadius: 4, boxShadow: '0 30px 60px -20px rgba(0,0,0,0.6), 0 0 0 10px #FBF3EA'}} />
+				<div style={{position: 'absolute', left: 70, top: 600, width: 8, height: 130, background: '#B98A4A', transform: 'rotate(12deg)', transformOrigin: 'top'}} />
+				<div style={{position: 'absolute', right: 70, top: 600, width: 8, height: 130, background: '#B98A4A', transform: 'rotate(-12deg)', transformOrigin: 'top'}} />
+			</div>
+			<div style={{position: 'absolute', left: 28, top: 28, padding: '10px 20px', borderRadius: 999, background: 'rgba(255,255,255,0.92)', fontFamily: font, fontWeight: 700, fontSize: 20, color: B.ink, opacity: prog(t, h2('venue') - 0.1, 0.4)}}>Reception · Entrance</div>
+		</div>
+	);
+};
+
+const EndCard: React.FC<{p: number; x: number; img: React.ReactNode; title: string; sub: string}> = ({p, x, img, title, sub}) => (
+	<div style={{position: 'absolute', left: x, top: 300, width: 640, height: 600, borderRadius: 24, background: '#fff', boxShadow: `inset 0 0 0 1.5px ${B.line}, 0 40px 80px -50px rgba(80,50,30,0.4)`, overflow: 'hidden', opacity: p, transform: `translateY(${(1 - p) * 40}px)`}}>
+		<div style={{height: 380, background: '#F3EAE2', overflow: 'hidden', display: 'flex', justifyContent: 'center'}}>{img}</div>
+		<div style={{padding: '32px 40px'}}>
+			<div style={{fontFamily: font, fontWeight: 800, fontSize: 40, letterSpacing: '-0.025em', color: B.ink}}>{title}</div>
+			<div style={{marginTop: 10, fontFamily: font, fontWeight: 500, fontSize: 26, lineHeight: 1.35, color: B.body}}>{sub}</div>
+		</div>
+	</div>
+);
+
+const End: React.FC<{t: number; q: Cues}> = ({t, q}) => {
+	const {h5} = q;
+	const tWant = h5('message') - 0.2;
+	const card = (at: number) => prog(t, at - 0.15, 0.7);
+	const cta = prog(t, h5('memories') - 0.3, 0.5);
+	const contact = prog(t, h5('started') - 0.4, 0.6);
+	return (
+		<>
+			<Fade t={t} a={q.S5 + 0.2} b={tWant - 0.45}>
+				<div style={{position: 'absolute', left: 0, right: 0, top: 140, textAlign: 'center'}}>
+					<div style={{display: 'flex', justifyContent: 'center'}}>
+						<Label>Moments QR</Label>
+					</div>
+					<div style={{marginTop: 18, fontFamily: font, fontWeight: 800, fontSize: 80, letterSpacing: '-0.035em', color: B.ink}}>
+						One package, <span style={{color: B.copper}}>two things.</span>
+					</div>
+				</div>
+				<EndCard p={card(h5('qr'))} x={250} img={<Img src={staticFile('qrh/img/qr-card.png')} style={{height: 340, marginTop: 40, borderRadius: 4, boxShadow: '0 20px 40px -20px rgba(0,0,0,0.45)'}} />} title="QR codes for every event" sub="Reception, Haldi, Mehendi — each with its own card and album." />
+				<div style={{position: 'absolute', left: 940, top: 570, width: 40, textAlign: 'center', fontFamily: font, fontWeight: 300, fontSize: 64, color: B.copper, opacity: card(h5('plus'))}}>+</div>
+				<EndCard p={card(h5('plus'))} x={1030} img={<Img src={staticFile('qrh/img/site-hero.png')} style={{width: 640, height: 1384, objectFit: 'cover', marginTop: -150}} />} title="Your own wedding website" sub="Your names, story, families and every event — on our signature template." />
+			</Fade>
+			<Fade t={t} a={tWant - 0.15}>
+				<div style={{position: 'absolute', left: 0, right: 0, top: 130, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+					<LogoImg h={140} />
+					<div style={{marginTop: 14, fontFamily: font, fontWeight: 700, fontSize: 34, letterSpacing: '-0.01em', color: B.ink}}>The Digital Moments</div>
+					<div style={{marginTop: 64, fontFamily: font, fontWeight: 800, fontSize: 84, letterSpacing: '-0.04em', color: B.ink}}>Want this for your wedding?</div>
+					<div style={{marginTop: 48, display: 'flex', alignItems: 'center', gap: 16, padding: '26px 52px', borderRadius: 999, background: B.pill, color: '#fff', fontFamily: font, fontWeight: 700, fontSize: 38, opacity: cta, transform: `scale(${mix(0.94, 1, cta)})`, boxShadow: '0 24px 44px -22px rgba(30,23,20,0.6)'}}>
+						<svg viewBox="0 0 24 24" width={36} height={36} fill="#fff">
+							<path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.2c.1.2.1.4 0 .6l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.4 1.8 2.2 1.2 1.1 2.2 1.4 2.5 1.6.3.1.5.1.7-.1l.9-1.1c.2-.3.4-.2.7-.1l2 .9c.3.2.5.2.6.3.1.2.1.7-.1 1.3Z" />
+						</svg>
+						Message “MEMORIES” on WhatsApp
+					</div>
+					<div style={{marginTop: 44, display: 'flex', alignItems: 'center', gap: 28, fontFamily: font, fontWeight: 600, fontSize: 28, color: B.body, opacity: contact}}>
+						<span>+91 73308 28654</span>
+						<span style={{color: B.line}}>|</span>
+						<span>@thedigitalmoments</span>
+						<span style={{color: B.line}}>|</span>
+						<span>the-digital-moments.vercel.app</span>
+					</div>
+				</div>
+				<div style={{position: 'absolute', left: 0, right: 0, bottom: 64, display: 'flex', justifyContent: 'center', opacity: contact}}>
+					<div style={{display: 'flex', alignItems: 'center', gap: 18}}>
+						<Img src={staticFile('qrh/img/founder.png')} style={{width: 68, height: 68, borderRadius: '50%', boxShadow: `0 0 0 1.5px ${B.line}`}} />
+						<div style={{fontFamily: font}}>
+							<div style={{fontWeight: 800, fontSize: 26, color: B.ink}}>Venkatesh Yarramsetti</div>
+							<div style={{fontWeight: 600, fontSize: 20, color: B.copper}}>Founder, The Digital Moments</div>
+						</div>
+					</div>
+				</div>
+			</Fade>
+		</>
+	);
+};
+
+// ── film ────────────────────────────────────────────────────────────────────────────────────────────
+
+export const MomentsQrHowItWorks: React.FC<HiwProps> = ({parts, duration, segments, musicOffset}) => {
+	const t = useCurrentFrame() / FPS;
+	const c = useTimes(parts);
+	const q = useCues(c, duration);
+	const {h1, h2, h3, h4} = q;
+	const [px, py, ph] = phonePose(t, q);
+	const recFlag = (t >= q.S3 + 0.4 && t < q.S4 + 0.4) || t >= q.scroll + 0.1;
+	const PR = PX + (PH * SCR_W) / SCR_H / 2 + 50; // callouts sit right of the phone
+	return (
+		<AbsoluteFill style={{background: B.bg}}>
+			<Backdrop />
+			<Intro t={t} c={c} q={q} />
+			<Fade t={t} a={q.S1 + 0.15} b={q.S2 - 0.25}>
+				<StepText
+					t={t}
+					label="Step 01 · For the couple"
+					l1="Create a folder."
+					l2="Get your QR card."
+					items={[
+						[h1('create'), 'A folder for each event'],
+						[h1('generate'), 'Generate its QR code'],
+						[h1('beautiful'), 'A card in your wedding’s theme'],
+						[h1('download'), 'Ready to download'],
+					]}
+				/>
+			</Fade>
+			<Fade t={t} a={q.S2 + 0.15} b={q.S3 - 0.25}>
+				<StepText
+					t={t}
+					label="Step 02 · At the wedding"
+					l1="Place it at"
+					l2="your venue."
+					items={[
+						[h2('place'), 'Put the card at your venue'],
+						[h2('scan'), 'Guests scan with their camera'],
+						[h2('no'), 'No app. No login.'],
+					]}
+				/>
+			</Fade>
+			<Fade t={t} a={q.S3 + 0.15} b={q.S4 - 0.25}>
+				<StepText
+					t={t}
+					label="Step 03 · For your guests"
+					l1="Guests share"
+					l2="their moments."
+					items={[
+						[h3('upload'), 'Their photos'],
+						[h3('note'), 'A note'],
+						[h3('reaction'), 'A reaction'],
+						[h3('voice'), 'A voice message'],
+					]}
+				/>
+			</Fade>
+			<Fade t={t} a={q.S4 + 0.15} b={q.scroll - 0.4}>
+				<StepText
+					t={t}
+					label="Step 04 · Website included"
+					l1="It all lands on"
+					l2="your website."
+					items={[
+						[h4('names'), 'Your names & wedding date'],
+						[h4('story'), 'Your story'],
+						[h4('event'), 'Every event, venue & directions'],
+					]}
+				/>
+			</Fade>
+			<Fade t={t} a={q.scroll - 0.05} b={q.S5 - 0.25}>
+				<StepText
+					t={t}
+					label="Step 04 · Wedding Memories"
+					l1="Every moment,"
+					l2="in one place."
+					items={[
+						[q.scroll + 0.1, 'Open Wedding Memories'],
+						[h4('photo'), 'Every guest’s photo'],
+						[h4('album'), 'An album for each event'],
+					]}
+				/>
+			</Fade>
+			<Venue t={t} q={q} />
+			{py < 1200 ? (
+				<IPhone15 x={px} y={py} h={ph} p={1} rec={recFlag} shadow="80,50,30">
+					{(s) => <Screens t={t} s={s} q={q} />}
+				</IPhone15>
+			) : null}
+			{/* labels beside the phone */}
+			<Callout t={t} at={h1('create') + 0.2} until={h1('generate') - 0.3} x={PR} y={300}>
+				Event: Reception
+			</Callout>
+			<Callout t={t} at={h1('generate') + 0.1} until={h1('beautiful') + 0.6} x={PR} y={640}>
+				Generate QR code
+			</Callout>
+			<Callout t={t} at={h1('download') + 0.1} until={q.S2 - 0.2} x={PR} y={780}>
+				Download the card
+			</Callout>
+			<Callout t={t} at={q.sent} until={q.sent + 0.9} x={PR} y={860}>
+				One tap: Share
+			</Callout>
+			<Callout t={t} at={q.sent + 1.0} until={q.S4 - 0.1} x={PR} y={300}>
+				Sent to the couple
+			</Callout>
+			<Callout t={t} at={h4('included') - 0.1} until={q.scroll - 0.3} x={PR} y={170}>
+				Website included
+			</Callout>
+			<Callout t={t} at={h4('photo') + 0.1} until={q.S5 - 0.2} x={PR} y={560}>
+				Shared by guests
+			</Callout>
+			<End t={t} q={q} />
+			<Brand t={t} c={c} q={q} />
+			<Tracker t={t} starts={[q.S1, q.S2, q.S3, q.S4]} end={q.S5} o={prog(t, q.S1 + 0.3, 0.5) * (1 - prog(t, q.S5, 0.5))} />
+			<AbsoluteFill style={{background: '#000', opacity: prog(t, duration - 0.6, 0.6, Easing.linear)}} />
+			<Soundtrack duration={duration} segments={segments} musicOffset={musicOffset} cues={{logo: 0.3, steps: [q.S1, q.S2, q.S3, q.S4, q.S5], cta: q.h5('memories')}} voEnd={parts.length ? parts[parts.length - 1].end : 0} />
+		</AbsoluteFill>
+	);
+};
+
+const MUSIC = {intro: 0.17, voice: 0.06, gap: 0.1, end: 0.22};
+const Soundtrack: React.FC<{duration: number; musicOffset: number; voEnd: number; segments: {s: number; e: number}[]; cues: {logo: number; steps: number[]; cta: number}}> = ({duration, musicOffset, voEnd, segments, cues}) => {
+	const speech = (t: number) => Math.max(0, ...segments.map((g) => prog(t, g.s - 0.2, 0.2, Easing.linear) * (1 - prog(t, g.e, 0.35, Easing.linear))));
+	const first = segments.length ? segments[0].s : 0;
+	const musicVol = (f: number) => {
+		const t = f / FPS;
+		const body = t > voEnd ? mix(MUSIC.gap, MUSIC.end, prog(t, voEnd, 0.8, Easing.linear)) : mix(MUSIC.gap, MUSIC.voice, speech(t));
+		const level = t < first - 0.3 ? MUSIC.intro : body;
+		return level * prog(t, 0, 0.2, Easing.linear) * (1 - prog(t, duration - 2.4, 2.4, Easing.linear));
+	};
+	const sfx: [number, string, number][] = [[cues.logo, 'harp-reveal', 0.1], ...cues.steps.map((a): [number, string, number] => [a, 'soft-swoosh', 0.1]), [cues.cta - 0.15, 'soft-chime', 0.25]];
+	return (
+		<>
+			<Audio src={staticFile('qrh/music.wav')} startFrom={Math.round(musicOffset * FPS)} volume={musicVol} />
+			<Audio src={staticFile('qrh/narration.wav')} volume={1.0} />
+			{sfx.map(([at, name, v], i) => (
+				<Sequence key={i} from={Math.max(0, Math.round(at * FPS))} durationInFrames={Math.round(3 * FPS)} layout="none">
+					<Audio src={staticFile(`qrh/sfx/${name}.mp3`)} volume={(f) => v * interpolate(f, [70, 90], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})} />
+				</Sequence>
+			))}
+		</>
+	);
+};

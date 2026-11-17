@@ -1,0 +1,53 @@
+{
+  "voice": "af_heart",
+  "speed": 1.0,
+  "pronunciations": {
+    "VibeLevel": "Vibe Level",
+    "Q&A": "Q and A",
+    "Lever": "Leever",
+    "Writing": "Write-ing",
+    "ATS": "A-T-S"
+  },
+  "scenes": [
+    {
+      "id": "s1-problem",
+      "text": "Resumes tell you what candidates have done. Interviews tell you how well they present themselves. But neither necessarily shows how they perform when the work gets real."
+    },
+    {
+      "id": "s3-intro",
+      "text": "That’s where VibeLevel Screening comes in. Through realistic, role-specific tasks, it evaluates candidates across four dimensions: Core Skills, Working with AI, Ownership, and Human Contribution."
+    },
+    {
+      "id": "n4-candidate",
+      "text": "Candidates tackle these tasks in a dedicated workspace with AI coding tools such as Claude Code, Codex, GitHub Copilot, and more built in. As they work through real challenges, VibeLevel looks beyond the final output to understand how they solve problems and collaborate with AI."
+    },
+    {
+      "id": "n5-skills",
+      "text": "First, Core Skills shows how well candidates apply their technical knowledge to the task. Working with AI reveals how effectively they guide AI, evaluate its suggestions, and verify the results."
+    },
+    {
+      "id": "n6-ownership",
+      "text": "But technical ability is only part of the picture. Ownership reveals how candidates take responsibility for their decisions, while Human Contribution highlights the judgment and value they bring beyond AI-generated output."
+    },
+    {
+      "id": "n7-create",
+      "text": "To evaluate the right skills, recruiters can start with ready-made assessment templates, customize them to their role requirements, or use AI to create assessments by simply describing what they need. And these assessments can integrate with ATS platforms such as Lever and Ashby, fitting directly into their existing hiring workflow."
+    },
+    {
+      "id": "n8-report",
+      "text": "Once candidates complete their assessments, recruiters get a clearer picture of their performance through skill scores, AI collaboration insights, Code Review, and Video Q&A. The Interview Guide then turns those findings into focused follow-up questions, helping recruiters explore strengths and gaps in greater depth."
+    },
+    {
+      "id": "n9-outcome",
+      "text": "With a clearer view of how candidates think, work, and use AI, you can identify strengths, uncover gaps, and build a shortlist backed by evidence."
+    },
+    {
+      "id": "s9-close",
+      "text": "When AI can do the work, know what makes a candidate stand out, across developer and non-developer roles."
+    },
+    {
+      "id": "s10-cta",
+      "text": "VibeLevel Screening. Book a demo."
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+[
+ {
+  "id": "s1",
+  "text": "AI is changing the way work gets done. Candidates can now build more, solve faster, and deliver impressive results with AI. But for hiring teams, evaluating the person behind that work has become a whole new challenge.",
+  "stability": 0.5
+ },
+ {
+  "id": "s2",
+  "text": "Meet VibeLevel Screening. An AI-era assessment platform that helps hiring teams evaluate candidates across both technical and non-technical roles, looking beyond the final output to understand how they think, work with AI, and contribute.",
+  "stability": 0.5
+ },
+ {
+  "id": "s3",
+  "text": "Candidates tackle realistic, role-specific challenges in a dedicated workspace with AI coding tools like Claude Code and GitHub Copilot integrated, allowing them to solve problems and collaborate with AI along the way.",
+  "stability": 0.5
+ },
+ {
+  "id": "s4a",
+  "text": "But the final output is only part of the picture. VibeLevel evaluates candidates across four dimensions.",
+  "stability": 0.5
+ },
+ {
+  "id": "s4b",
+  "text": "Core Skills measures their ability to apply knowledge.",
+  "stability": 0.5
+ },
+ {
+  "id": "s4c",
+  "text": "Working with AI reveals how effectively they collaborate with and evaluate AI.",
+  "stability": 0.5
+ },
+ {
+  "id": "s4d",
+  "text": "Ownership highlights their decision-making and responsibility.",
+  "stability": 0.5
+ },
+ {
+  "id": "s4e",
+  "text": "Human Contribution captures the judgment and value they bring beyond AI-generated work.",
+  "stability": 0.5
+ },
+ {
+  "id": "s5",
+  "text": "After the assessment, candidates complete a short AI-led interview, offering further insight into their understanding and reasoning.",
+  "stability": 0.5
+ },
+ {
+  "id": "s6",
+  "text": "Recruiters get a detailed report with performance scores, AI insights, Code Review, and Video Q&A, alongside an Interview Guide to explore candidate strengths and gaps.",
+  "stability": 0.5
+ },
+ {
+  "id": "s7a",
+  "text": "Go beyond the output. Understand the person behind it.",
+  "stability": 0.5
+ },
+ {
+  "id": "s7b",
+  "text": "VibeLevel Screening. Hire for what matters in the AI era.",
+  "stability": 0.5
+ }
+]
