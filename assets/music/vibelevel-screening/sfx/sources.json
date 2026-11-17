@@ -1,0 +1,57 @@
+[
+ {
+  "file": "sfx/ui-click.mp3",
+  "mixkit_id": "2573",
+  "title": "Interface option select",
+  "url": "https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3"
+ },
+ {
+  "file": "sfx/ui-zoom-in.mp3",
+  "mixkit_id": "2621",
+  "title": "Ui zoom in, long sound",
+  "url": "https://assets.mixkit.co/active_storage/sfx/2621/2621-preview.mp3"
+ },
+ {
+  "file": "sfx/ui-zoom-out.mp3",
+  "mixkit_id": "2619",
+  "title": "UI zoom out",
+  "url": "https://assets.mixkit.co/active_storage/sfx/2619/2619-preview.mp3"
+ },
+ {
+  "file": "sfx/whoosh-air.mp3",
+  "mixkit_id": "1489",
+  "title": "Air woosh",
+  "url": "https://assets.mixkit.co/active_storage/sfx/1489/1489-preview.mp3"
+ },
+ {
+  "file": "sfx/whoosh-transition.mp3",
+  "mixkit_id": "1490",
+  "title": "Fast whoosh transition",
+  "url": "https://assets.mixkit.co/active_storage/sfx/1490/1490-preview.mp3"
+ },
+ {
+  "file": "sfx/text-pop.mp3",
+  "mixkit_id": "3005",
+  "title": "Explainer video pops whoosh light pop",
+  "url": "https://assets.mixkit.co/active_storage/sfx/3005/3005-preview.mp3"
+ },
+ {
+  "file": "sfx/tech-slide.mp3",
+  "mixkit_id": "3120",
+  "title": "Technology transition slide",
+  "url": "https://assets.mixkit.co/active_storage/sfx/3120/3120-preview.mp3"
+ },
+ {
+  "file": "sfx/logo-impact.mp3",
+  "mixkit_id": "2903",
+  "title": "Movie whoosh impact presentation",
+  "url": "https://assets.mixkit.co/active_storage/sfx/2903/2903-preview.mp3"
+ },
+ {
+  "file": "sfx/logo-sweep.mp3",
+  "mixkit_id": "2633",
+  "title": "Sweeping sparkle presentation intro",
+  "url": "https://assets.mixkit.co/active_storage/sfx/2633/2633-preview.mp3",
+  "note": "Replaces logo-impact on logo reveals (user feedback 2026-10-14)"
+ }
+]
